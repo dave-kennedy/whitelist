@@ -21,6 +21,9 @@
             #header {
                 padding: 0 1em;
             }
+            #header img {
+                vertical-align: top;
+            }
             #upload-result {
                 border: 1px solid;
                 border-radius: 2px;
@@ -39,7 +42,11 @@
     <body>
         <div id="container">
             <div class="ui-corner-bottom ui-state-default" id="header">
-                <h2><a href="index.php">dnsmasq Configuration</a></h2>
+                <h2>
+                    <a href="index.php">
+                        <img src="dnsmasq.png" /> dnsmasq Configuration
+                    </a>
+                </h2>
             </div>
             <?php
                 if ($saveResult == 0) {
