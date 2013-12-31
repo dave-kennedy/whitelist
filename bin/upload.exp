@@ -1,0 +1,19 @@
+#!/usr/bin/expect -f
+
+set srcPath [lindex $argv 0]
+set destPath [lindex $argv 1]
+set password [lindex $argv 2]
+
+spawn /usr/bin/scp "$srcPath" "root@192.168.1.1:$destPath"
+
+expect {
+    -re ".*yes.*no.*" {
+        exp_send "yes\r"
+        exp_continue
+    }
+    -re ".*password.*" {
+        exp_send "$password\r"
+    }
+}
+
+expect eof
