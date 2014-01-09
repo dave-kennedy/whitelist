@@ -1,10 +1,18 @@
 #!/usr/bin/expect -f
 
-set srcPath [lindex $argv 0]
-set destPath [lindex $argv 1]
-set password [lindex $argv 2]
+# Enable some diagnostic output
+# WARNING: This will make the password visible in logs
+#exp_internal 1
 
-spawn /usr/bin/scp "$srcPath" "root@192.168.1.1:$destPath"
+set config [lindex $argv 0]
+set tempFile [lindex $argv 1]
+
+set handle [open "$tempFile" r]
+set password [read $handle]
+
+close $handle
+
+spawn /usr/bin/scp "$config" root@192.168.1.1:/etc/dnsmasq.conf
 
 expect {
     -re ".*yes.*no.*" {
@@ -17,3 +25,15 @@ expect {
 }
 
 expect eof
+
+spawn /usr/bin/ssh root@192.168.1.1 "/etc/init.d/dnsmasq restart"
+
+expect {
+    -re ".*yes.*no.*" {
+        exp_send "yes\r"
+        exp_continue
+    }
+    -re ".*password.*" {
+        exp_send "$password\r"
+    }
+}

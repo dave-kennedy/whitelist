@@ -70,17 +70,18 @@
                 <div id="categories">
                     <ul>
                         <?php
-                            foreach ($categories as $cat => $urls) {
-                                echo "<li><a href=\"#" . $cat . "\">" . $cat . "</a></li>\n";
+                            $categories = readConfig($config, $nameServer);
+                            foreach ($categories as $category => $urls) {
+                                echo "<li><a href=\"#" . $category . "\">" . $category . "</a></li>\n";
                             }
                         ?>
                         <li id="new-category-tab"><a href="#new-category">+ New</a></li>
                     </ul>
                     <?php
-                        foreach ($categories as $cat => $urls) {
-                            echo "<div id=\"" . $cat . "\">\n"
-                                . "<p><input type=\"text\" value=\"" . $cat . "\" /></p>"
-                                . "<p><textarea name=\"" . $cat . "\">";
+                        foreach ($categories as $category => $urls) {
+                            echo "<div id=\"" . $category . "\">\n"
+                                . "<p><input type=\"text\" value=\"" . $category . "\" /></p>"
+                                . "<p><textarea name=\"" . $category . "\">";
                             
                             foreach ($urls as $url) {
                                 echo $url . "\n";
