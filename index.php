@@ -84,7 +84,7 @@
                                 . "<p><textarea name=\"" . $category . "\">";
                             
                             foreach ($urls as $url) {
-                                echo $url . "\n";
+                                echo $url;
                             }
                             
                             echo "</textarea></p>\n"
