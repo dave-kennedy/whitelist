@@ -21,14 +21,14 @@
             
             this.links = this.tabs.children('a')
                 .click(function () {
-                    var panelId = $(this).attr('href');
-                    self.activate(panelId);
+                    var panelID = $(this).attr('href');
+                    self.activate(panelID);
                 });
             
             this.activate();
         },
-        'activate': function (panelId) {
-            if (!panelId) {
+        'activate': function (panelID) {
+            if (!panelID) {
                 this.tabs.filter(':first').addClass('ui-state-active');
                 this.panels.filter(':not(:first)').hide();
                 return;
@@ -37,16 +37,20 @@
             this.tabs.removeClass('ui-state-active');
             this.panels.hide();
             
-            this.tabs.has('a[href=' + panelId + ']').addClass('ui-state-active');
-            $(panelId).show();
+            this.tabs.has('a[href=' + panelID + ']').addClass('ui-state-active');
+            $(panelID).show();
         },
-        'addTab': function (name) {
-            var newLink, newPanel, newTab, self = this;
+        'addTab': function (title) {
+            var newID = this.makeID(title),
+                self = this,
+                newLink,
+                newPanel,
+                newTab;
             
-            newLink = $('<a href="#' + name + '">' + name + '</a>')
+            newLink = $('<a href="#' + newID + '">' + title + '</a>')
                 .click(function () {
-                    var panelId = $(this).attr('href');
-                    self.activate(panelId);
+                    var panelID = $(this).attr('href');
+                    self.activate(panelID);
                 });
             
             newTab = $('<li class="ui-corner-left ui-state-default"></li>')
@@ -57,9 +61,9 @@
                     $(this).removeClass('ui-state-hover');
                 });
             
-            newPanel = $('<div class="ui-vertabs-panel" id="' + name + '">'
-                + '<p><input type="text" value="' + name + '" /></p>'
-                + '<p><textarea name="' + name + '"></textarea></p>'
+            newPanel = $('<div class="ui-vertabs-panel" id="' + newID + '">'
+                + '<p><input class="category-title" name="' + newID + '[category]" type="text" value="' + title + '" /></p>'
+                + '<p><textarea class="category-contents" name="' + newID + '[contents]"></textarea></p>'
                 + '</div>');
             
             this.links = this.links.add(newLink);
@@ -71,13 +75,20 @@
             
             newLink.click();
         },
-        'renameTab': function (name, newName) {
-            this.links.filter('[href=#' + name + ']')
-                .attr('href', '#' + newName)
-                .text(newName);
+        'makeID': function (string) {
+            return string.replace(/ /g, '-').replace(/[^\w-]/g, '').toLowerCase();
+        },
+        'renameTab': function (title, newTitle) {
+            var ID = this.makeID(title),
+                newID = this.makeID(newTitle);
             
-            $('#' + name).attr('id', newName)
-                .find('textarea').attr('name', newName);
+            this.links.filter('[href=#' + ID + ']')
+                .attr('href', '#' + newID)
+                .text(newTitle);
+            
+            $('#' + ID).attr('id', newID)
+                .find('.category-title').attr('name', newID + '[category]').addBack()
+                .find('.category-contents').attr('name', newID + '[contents]');
         }
     });
 }(jQuery));

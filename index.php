@@ -10,10 +10,6 @@
                 font-family: Verdana,Arial,sans-serif;
                 margin: 0;
             }
-            textarea {
-                height: 20em;
-                width: 100%;
-            }
             #container {
                 margin: 0 auto;
                 width: 75%;
@@ -37,6 +33,10 @@
                 background-color: #fee;
                 color: #c00;
             }
+            .category-contents, .new-category-contents {
+                height: 20em;
+                width: 100%;
+            }
         </style>
     </head>
     <body>
@@ -54,7 +54,7 @@
                 To add a new category, click the "+ New" tab on the left. To delete a category,
                 remove all of the URLs from the textbox on the right.
             </p>
-            <form action="index.php" id="upload-form" method="post">
+            <form action="index.php" id="form" method="post">
                 <input id="action" name="action" type="hidden" />
                 <input id="password" name="password" type="hidden" />
                 <div id="categories">
@@ -64,8 +64,8 @@
                     </ul>
                     <?php echo $categoryDivs; ?>
                     <div id="new-category">
-                        <p><input placeholder="New category" type="text" /></p>
-                        <p><textarea></textarea></p>
+                        <p><input class="new-category-title" placeholder="New category" type="text" /></p>
+                        <p><textarea class="new-category-contents"></textarea></p>
                     </div>
                 </div>
                 <p style="text-align: right;">
@@ -85,32 +85,50 @@
             $(function () {
                 var action = $('#action'),
                     categories = $('#categories').vertabs(),
-                    form = $('#upload-form'),
-                    password = $('#password'),
+                    form = $('#form'),
                     prompt = $('#upload-prompt'),
-                    name,
-                    newName;
+                    title;
                 
-                $('.ui-vertabs-panel input').focus(function () {
-                    name = $(this).val().trim();
-                }).blur(function () {
-                    newName = $(this).val().trim();
+                $('body').focusin(function (e) {
+                    var target = $(e.target);
                     
-                    if (name == '' && newName != '') {
-                        categories.vertabs('addTab', newName);
-                        $(this).val('');
+                    if (target.hasClass('category-title')) {
+                        title = target.val().trim();
+                        return;
+                    }
+                }).focusout(function (e) {
+                    var target = $(e.target),
+                        newTitle;
+                    
+                    if (target.hasClass('category-title')) {
+                        newTitle = target.val().trim();
+                        categories.vertabs('renameTab', title, newTitle);
                         return;
                     }
                     
-                    if (name != '' && newName != '' && name != newName) {
-                        categories.vertabs('renameTab', name, newName);
+                    if (target.hasClass('new-category-title')) {
+                        newTitle = target.val().trim();
+                        categories.vertabs('addTab', newTitle);
+                        return;
+                    }
+                    
+                    if (target.is('#upload-prompt-password')) {
+                        $('#password').val(target.val());
                         return;
                     }
                 });
                 
-                $('#upload-prompt-password').blur(function () {
-                    password.val($(this).val());
-                });
+                $('#save-button').click(function (e) {
+                    e.preventDefault();
+                    action.val('save');
+                    form.submit();
+                }).button();
+                
+                $('#upload-button').click(function (e) {
+                    e.preventDefault();
+                    action.val('upload');
+                    prompt.dialog('open');
+                }).button();
                 
                 prompt.dialog({
                     'autoOpen': false,
@@ -124,22 +142,6 @@
                     },
                     'modal': true
                 });
-                
-                $('#save-button').click(function (e) {
-                    e.preventDefault();
-                    
-                    action.val('save');
-                    
-                    form.submit();
-                }).button();
-                
-                $('#upload-button').click(function (e) {
-                    e.preventDefault();
-                    
-                    action.val('upload');
-                    
-                    prompt.dialog('open');
-                }).button();
                 
                 $('#result').hide().fadeIn().delay(3000).fadeOut();
             });

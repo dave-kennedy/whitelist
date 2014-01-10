@@ -3,7 +3,7 @@
     $config = "$binPath/dnsmasq.conf";
     $script = "$binPath/upload.exp";
     
-    $domainRegEx = "[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})";
+    $domainRegEx = "[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*(?:\.[A-Za-z]{2,})";
     
     $nameServer = "8.8.8.8";
     
@@ -12,10 +12,9 @@
     $saveResult = "";
     $uploadResult = "";
     
-    $tempFile;
-    
     $categories;
     $category;
+    $categoryID;
     $url;
     $urls;
     
@@ -62,7 +61,7 @@
             // e.g. "server=/stackoverflow.com/8.8.8.8 #comment"
             if (preg_match("/^server=\/($domainRegEx)\/$nameServer ?(#.*)$/", $line, $matches)) {
                 $url = $matches[1];
-                $comment = end($matches);
+                $comment = $matches[2];
                 
                 $categories[$category][] = "$url $comment\n";
                 
@@ -85,7 +84,9 @@
     }
     
     function saveConfig($config, $domainRegEx, $nameServer) {
+        $category;
         $comment;
+        $contents;
         $handle;
         $line;
         $name;
@@ -102,9 +103,16 @@
                 continue;
             }
             
-            fwrite($handle, "\n#[Category: " . ucfirst($name) . "]\n");
+            $category = trim($value['category']);
+            $contents = trim($value['contents']);
             
-            foreach (preg_split("/\n/", $value) as $line) {
+            if ($category == "" || $contents == "") {
+                continue;
+            }
+            
+            fwrite($handle, "\n#[Category: " . $category . "]\n");
+            
+            foreach (preg_split("/\n/", $contents) as $line) {
                 $line = trim($line);
                 
                 // e.g. "stackoverflow.com"
@@ -120,7 +128,7 @@
                 // e.g. "stackoverflow.com #comment"
                 if (preg_match("/^($domainRegEx) ?(#.*)$/", $line, $matches)) {
                     $url = $matches[1];
-                    $comment = end($matches);
+                    $comment = $matches[2];
                     
                     fwrite($handle, "server=/$url/$nameServer $comment\n");
                     
@@ -151,13 +159,16 @@
         return $cygPath;
     }
     
-    function uploadConfig($script, $config, $tempFile) {
+    function uploadConfig($script, $config) {
         $script = getCygPath($script);
         $config = getCygPath($config);
-        $tempFile = getCygPath($tempFile);
+        $tempFile = getCygPath($makeTemp());
+        
         $command = "c:/cygwin64/bin/expect.exe -f $script $config $tempFile";
         
         exec($command, $output, $exitCode);
+        
+        unlink($tempFile);
         
         return $exitCode;
     }
@@ -173,6 +184,12 @@
         return $tempFile;
     }
     
+    function makeID($string) {
+        $string = preg_replace('/[\W]+/', '-', $string);
+        
+        return strtolower($string);
+    }
+    
     if (!file_exists($config)) {
         die("$config not found. Please make sure the file exists and refresh the page.");
     }
@@ -186,22 +203,21 @@
     }
     
     if (isset($_POST["action"]) && $_POST["action"] == "upload") {
-        $tempFile = makeTemp();
-        
-        if (uploadConfig($script, $config, $tempFile) == 0) {
+        if (uploadConfig($script, $config) == 0) {
             $uploadResult = "<p class=\"result-success\" id=\"result\">Configuration uploaded.</p>";
         } else {
             $uploadResult = "<p class=\"result-error\" id=\"result\">An error occurred while uploading the configuration.</p>";
         }
-        
-        unlink($tempFile);
     }
     
     $categories = readConfig($config, $domainRegEx, $nameServer);
     
     foreach ($categories as $category => $contents) {
-        $categoryTabs .= "<li><a href=\"#$category\">$category</a></li>";
-        $categoryDivs .= "<div id=\"$category\"><p><input type=\"text\" value=\"$category\" /></p><p><textarea name=\"$category\">";
+        $categoryID = makeID($category);
+        $categoryTabs .= "<li><a href=\"#$categoryID\">$category</a></li>";
+        $categoryDivs .= "<div id=\"$categoryID\">
+            <p><input class=\"category-title\" name=\"" . $categoryID . "[category]\" type=\"text\" value=\"$category\" /></p>
+            <p><textarea class=\"category-contents\" name=\"" . $categoryID . "[contents]\">";
         
         foreach ($contents as $line) {
             $categoryDivs .= $line;
