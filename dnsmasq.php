@@ -199,12 +199,12 @@
     
     $categories = readConfig($config, $domainRegEx, $nameServer);
     
-    foreach ($categories as $category => $urls) {
+    foreach ($categories as $category => $contents) {
         $categoryTabs .= "<li><a href=\"#$category\">$category</a></li>";
         $categoryDivs .= "<div id=\"$category\"><p><input type=\"text\" value=\"$category\" /></p><p><textarea name=\"$category\">";
         
-        foreach ($urls as $url) {
-            $categoryDivs .= $url;
+        foreach ($contents as $line) {
+            $categoryDivs .= $line;
         }
         
         $categoryDivs .= "</textarea></p></div>";
