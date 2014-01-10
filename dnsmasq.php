@@ -1,5 +1,5 @@
 <?php
-    $binPath = 'C:/WampServer/www/dnsmasq/bin/';
+    $binPath = 'C:/wamp/www/dnsmasq/bin/';
     $config = $binPath . 'dnsmasq.conf';
     $script = $binPath . 'upload.exp';
     
