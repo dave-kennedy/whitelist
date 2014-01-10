@@ -1,4 +1,4 @@
-<?php require('dnsmasq.php'); ?>
+<?php require("dnsmasq.php"); ?>
 <!doctype html>
 <html>
     <head>
@@ -50,14 +50,14 @@
             </div>
             <?php
                 if ($saveResult == 0) {
-                    echo '<p class="upload-success" id="upload-result">Configuration saved.</p>';
+                    echo "<p class=\"upload-success\" id=\"upload-result\">Configuration saved.</p>";
                 } else if ($saveResult > 0) {
-                    echo '<p class="upload-error" id="upload-result">An error occurred while saving the configuration.</p>';
+                    echo "<p class=\"upload-error\" id=\"upload-result\">An error occurred while saving the configuration.</p>";
                 }
                 if ($uploadResult == 0) {
-                    echo '<p class="upload-success" id="upload-result">Configuration uploaded.</p>';
+                    echo "<p class=\"upload-success\" id=\"upload-result\">Configuration uploaded.</p>";
                 } else if ($uploadResult > 0) {
-                    echo '<p class="upload-error" id="upload-result">An error occurred while uploading the configuration.</p>';
+                    echo "<p class=\"upload-error\" id=\"upload-result\">An error occurred while uploading the configuration.</p>";
                 }
             ?>
             <p>
@@ -72,16 +72,16 @@
                         <?php
                             $categories = readConfig($config, $nameServer);
                             foreach ($categories as $category => $urls) {
-                                echo "<li><a href=\"#" . $category . "\">" . $category . "</a></li>\n";
+                                echo "<li><a href=\"#$category\">$category</a></li>\n";
                             }
                         ?>
                         <li id="new-category-tab"><a href="#new-category">+ New</a></li>
                     </ul>
                     <?php
                         foreach ($categories as $category => $urls) {
-                            echo "<div id=\"" . $category . "\">\n"
-                                . "<p><input type=\"text\" value=\"" . $category . "\" /></p>"
-                                . "<p><textarea name=\"" . $category . "\">";
+                            echo "<div id=\"$category\">\n"
+                                . "<p><input type=\"text\" value=\"$category\" /></p>"
+                                . "<p><textarea name=\"$category\">";
                             
                             foreach ($urls as $url) {
                                 echo $url;
