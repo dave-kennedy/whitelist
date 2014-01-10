@@ -73,7 +73,9 @@
             $('#new-category-tab').before(newTab);
             $('#new-category').before(newPanel);
             
-            newLink.click();
+            this.activate('#' + newID);
+            
+            $('#' + newID).find('.category-contents').focus();
         },
         'makeID': function (string) {
             return string.replace(/ /g, '-').replace(/[^\w-]/g, '').toLowerCase();
