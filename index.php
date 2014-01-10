@@ -24,16 +24,16 @@
             #header img {
                 vertical-align: top;
             }
-            #upload-result {
+            #result {
                 border: 1px solid;
                 border-radius: 2px;
                 padding: 0.5em;
             }
-            .upload-success {
+            .result-success {
                 background-color: #efe;
                 color: #090;
             }
-            .upload-error {
+            .result-error {
                 background-color: #fee;
                 color: #c00;
             }
@@ -48,18 +48,8 @@
                     </a>
                 </h2>
             </div>
-            <?php
-                if ($saveResult == 0) {
-                    echo "<p class=\"upload-success\" id=\"upload-result\">Configuration saved.</p>";
-                } else if ($saveResult > 0) {
-                    echo "<p class=\"upload-error\" id=\"upload-result\">An error occurred while saving the configuration.</p>";
-                }
-                if ($uploadResult == 0) {
-                    echo "<p class=\"upload-success\" id=\"upload-result\">Configuration uploaded.</p>";
-                } else if ($uploadResult > 0) {
-                    echo "<p class=\"upload-error\" id=\"upload-result\">An error occurred while uploading the configuration.</p>";
-                }
-            ?>
+            <?php echo $saveResult; ?>
+            <?php echo $uploadResult; ?>
             <p>
                 To add a new category, click the "+ New" tab on the left. To delete a category,
                 remove all of the URLs from the textbox on the right.
@@ -69,28 +59,10 @@
                 <input id="password" name="password" type="hidden" />
                 <div id="categories">
                     <ul>
-                        <?php
-                            $categories = readConfig($config, $nameServer);
-                            foreach ($categories as $category => $urls) {
-                                echo "<li><a href=\"#$category\">$category</a></li>\n";
-                            }
-                        ?>
+                        <?php echo $categoryTabs; ?>
                         <li id="new-category-tab"><a href="#new-category">+ New</a></li>
                     </ul>
-                    <?php
-                        foreach ($categories as $category => $urls) {
-                            echo "<div id=\"$category\">\n"
-                                . "<p><input type=\"text\" value=\"$category\" /></p>"
-                                . "<p><textarea name=\"$category\">";
-                            
-                            foreach ($urls as $url) {
-                                echo $url;
-                            }
-                            
-                            echo "</textarea></p>\n"
-                                . "</div>\n";
-                        }
-                    ?>
+                    <?php echo $categoryDivs; ?>
                     <div id="new-category">
                         <p><input placeholder="New category" type="text" /></p>
                         <p><textarea></textarea></p>
@@ -169,7 +141,7 @@
                     prompt.dialog('open');
                 }).button();
                 
-                $('#upload-result').hide().fadeIn().delay(3000).fadeOut();
+                $('#result').hide().fadeIn().delay(3000).fadeOut();
             });
         </script>
     </body>

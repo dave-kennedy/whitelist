@@ -3,18 +3,23 @@
     $config = "$binPath/dnsmasq.conf";
     $script = "$binPath/upload.exp";
     
+    $domainRegEx = "[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})";
+    
     $nameServer = "8.8.8.8";
     
-    $saveResult = -1;
-    $uploadResult = -1;
+    $categoryDivs = "";
+    $categoryTabs = "";
+    $saveResult = "";
+    $uploadResult = "";
     
     $tempFile;
     
-    $domainRegEx = "[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*(\.[A-Za-z]{2,})";
+    $categories;
+    $category;
+    $url;
+    $urls;
     
-    function readConfig($config, $nameServer) {
-        global $domainRegEx;
-        
+    function readConfig($config, $domainRegEx, $nameServer) {
         $category;
         $categories;
         $comment;
@@ -79,9 +84,7 @@
         return $categories;
     }
     
-    function writeConfig($config, $nameServer) {
-        global $domainRegEx;
-        
+    function saveConfig($config, $domainRegEx, $nameServer) {
         $comment;
         $handle;
         $line;
@@ -139,7 +142,7 @@
         
         fclose($handle);
         
-        $saveResult = 0;
+        return 0;
     }
     
     function getCygPath($winPath) {
@@ -175,12 +178,35 @@
     }
     
     if (isset($_POST["action"]) && $_POST["action"] == "save") {
-        $saveResult = writeConfig($config, $nameServer);
+        if (saveConfig($config, $domainRegEx, $nameServer) == 0) {
+            $saveResult = "<p class=\"result-success\" id=\"result\">Configuration saved.</p>";
+        } else {
+            $saveResult = "<p class=\"result-error\" id=\"result\">An error occurred while saving the configuration.</p>";
+        }
     }
     
     if (isset($_POST["action"]) && $_POST["action"] == "upload") {
         $tempFile = makeTemp();
-        $uploadResult = uploadConfig($script, $config, $tempFile);
+        
+        if (uploadConfig($script, $config, $tempFile) == 0) {
+            $uploadResult = "<p class=\"result-success\" id=\"result\">Configuration uploaded.</p>";
+        } else {
+            $uploadResult = "<p class=\"result-error\" id=\"result\">An error occurred while uploading the configuration.</p>";
+        }
+        
         unlink($tempFile);
+    }
+    
+    $categories = readConfig($config, $domainRegEx, $nameServer);
+    
+    foreach ($categories as $category => $urls) {
+        $categoryTabs .= "<li><a href=\"#$category\">$category</a></li>";
+        $categoryDivs .= "<div id=\"$category\"><p><input type=\"text\" value=\"$category\" /></p><p><textarea name=\"$category\">";
+        
+        foreach ($urls as $url) {
+            $categoryDivs .= $url;
+        }
+        
+        $categoryDivs .= "</textarea></p></div>";
     }
 ?>
