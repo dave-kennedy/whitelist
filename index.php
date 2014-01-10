@@ -33,9 +33,30 @@
                 background-color: #fee;
                 color: #c00;
             }
+            .category-title, .new-category-title {
+                border: 1px solid #ddd;
+                border-radius: 2px;
+                font-size: 1.1em;
+                padding: 0.4em;
+            }
             .category-contents, .new-category-contents {
+                border: 1px solid #ddd;
+                border-radius: 2px;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
                 height: 20em;
+                padding: 0.4em;
                 width: 100%;
+            }
+            .password {
+                border: 1px solid #ddd;
+                border-radius: 2px;
+                display: block;
+                float: right;
+                font-size: 1.1em;
+                margin-left: 5px;
+                padding: 0.4em;
+                vertical-align: top;
             }
         </style>
     </head>
@@ -51,12 +72,15 @@
             <?php echo $saveResult; ?>
             <?php echo $uploadResult; ?>
             <p>
-                To add a new category, click the "+ New" tab on the left. To delete a category,
-                remove all of the URLs from the textbox on the right.
+                To add a new category, click the "+ New" tab on the left. To delete a category, remove all of the URLs
+                from the textbox on the right.
+            </p>
+            <p>
+                Click the save button below to save the configuration locally. To upload the configuration and restart
+                the DNS server, enter the password and click the upload button.
             </p>
             <form action="index.php" id="form" method="post">
                 <input id="action" name="action" type="hidden" />
-                <input id="password" name="password" type="hidden" />
                 <div id="categories">
                     <ul>
                         <?php echo $categoryTabs; ?>
@@ -69,14 +93,11 @@
                     </div>
                 </div>
                 <p style="text-align: right;">
-                    <input class="button" id="save-button" type="button" value="Save" />
-                    <input class="button" id="upload-button" type="button" value="Upload" />
+                    <input class="button" id="save" type="button" value="Save" />
+                    <input class="button" id="upload" type="button" value="Upload" />
+                    <input class="password" id="password" placeholder="Password" type="password" />
                 </p>
             </form>
-        </div>
-        <div id="upload-prompt" title="Upload">
-            <p>Please enter the password to continue:</p>
-            <p><input id="upload-prompt-password" type="password" /></p>
         </div>
         <script src="js/jquery-2.0.3.min.js"></script>
         <script src="js/jquery-ui-1.10.3.min.js"></script>
@@ -86,7 +107,6 @@
                 var action = $('#action'),
                     categories = $('#categories').vertabs(),
                     form = $('#form'),
-                    prompt = $('#upload-prompt'),
                     title;
                 
                 $('body').focusin(function (e) {
@@ -111,37 +131,31 @@
                         categories.vertabs('addTab', newTitle);
                         return;
                     }
-                    
-                    if (target.is('#upload-prompt-password')) {
-                        $('#password').val(target.val());
-                        return;
-                    }
                 });
                 
-                $('#save-button').click(function (e) {
+                $('#save').click(function (e) {
                     e.preventDefault();
                     action.val('save');
                     form.submit();
                 }).button();
                 
-                $('#upload-button').click(function (e) {
+                $('#upload').click(function (e) {
+                    var password = $('#password');
+                    
                     e.preventDefault();
+                    
+                    if (password.val() === '') {
+                        password.css({
+                            'background-color': '#fee',
+                            'border-color': '#c00',
+                            'color': '#c00'
+                        }).effect('bounce').focus();
+                        return;
+                    }
+                    
                     action.val('upload');
-                    prompt.dialog('open');
+                    form.submit();
                 }).button();
-                
-                prompt.dialog({
-                    'autoOpen': false,
-                    'buttons': {
-                        'Ok': function () {
-                            form.submit();
-                        },
-                        'Cancel': function () {
-                            $(this).dialog('close');
-                        }
-                    },
-                    'modal': true
-                });
                 
                 $('#result').hide().fadeIn().delay(3000).fadeOut();
             });
