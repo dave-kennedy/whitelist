@@ -36,7 +36,6 @@
             .category-title, .new-category-title {
                 border: 1px solid #ddd;
                 border-radius: 2px;
-                font-size: 1.1em;
                 padding: 0.4em;
             }
             .category-contents, .new-category-contents {
@@ -105,7 +104,20 @@
         <script>
             $(function () {
                 var action = $('#action'),
-                    categories = $('#categories').vertabs(),
+                    categories = $('#categories').vertabs({
+                        'addTab': function (title, newID) {
+                            var newTitle = $('<p><input class="category-title" name="' + newID + '[category]" type="text" value="' + title + '" /></p>'),
+                                newContents = $('<p><textarea class="category-contents" name="' + newID + '[contents]"></textarea></p>');
+                            
+                            $('#' + newID).append(newTitle).append(newContents);
+                            
+                            newContents.find('textarea').focus();
+                        },
+                        'renameTab': function (title, newID) {
+                            $('#' + newID).find('.category-title').attr('name', newID + '[category]').addBack()
+                                .find('.category-contents').attr('name', newID + '[contents]');
+                        }
+                    }),
                     form = $('#form'),
                     title;
                 

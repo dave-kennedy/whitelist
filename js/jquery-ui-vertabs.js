@@ -1,5 +1,9 @@
 (function ($) {
     $.widget('ui.vertabs', {
+        'options': {
+            'addTab': null,
+            'renameTab': null
+        },
         '_create': function () {
             var self = this;
             
@@ -61,10 +65,7 @@
                     $(this).removeClass('ui-state-hover');
                 });
             
-            newPanel = $('<div class="ui-vertabs-panel" id="' + newID + '">'
-                + '<p><input class="category-title" name="' + newID + '[category]" type="text" value="' + title + '" /></p>'
-                + '<p><textarea class="category-contents" name="' + newID + '[contents]"></textarea></p>'
-                + '</div>');
+            newPanel = $('<div class="ui-vertabs-panel" id="' + newID + '"></div>');
             
             this.links = this.links.add(newLink);
             this.tabs = this.tabs.add(newTab);
@@ -75,7 +76,9 @@
             
             this.activate('#' + newID);
             
-            $('#' + newID).find('.category-contents').focus();
+            if ($.isFunction(this.options.addTab)) {
+                this.options.addTab(title, newID);
+            }
         },
         'makeID': function (string) {
             return string.replace(/ /g, '-').replace(/[^\w-]/g, '').toLowerCase();
@@ -88,9 +91,11 @@
                 .attr('href', '#' + newID)
                 .text(newTitle);
             
-            $('#' + ID).attr('id', newID)
-                .find('.category-title').attr('name', newID + '[category]').addBack()
-                .find('.category-contents').attr('name', newID + '[contents]');
+            $('#' + ID).attr('id', newID);
+            
+            if ($.isFunction(this.options.renameTab)) {
+                this.options.renameTab(title, newID);
+            }
         }
     });
 }(jQuery));
