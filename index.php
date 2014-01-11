@@ -4,7 +4,7 @@
     <head>
         <title>dnsmasq Configuration</title>
         <link href="css/flick/jquery-ui-1.10.3.min.css" rel="stylesheet" />
-        <link href="css/jquery-ui-vertabs.css" rel="stylesheet" />
+        <link href="css/jquery-ui-vertabs.min.css" rel="stylesheet" />
         <link href="css/site.css" rel="stylesheet" />
     </head>
     <body>
@@ -48,7 +48,7 @@
         </div>
         <script src="js/jquery-2.0.3.min.js"></script>
         <script src="js/jquery-ui-1.10.3.min.js"></script>
-        <script src="js/jquery-ui-vertabs.js"></script>
+        <script src="js/jquery-ui-vertabs.min.js"></script>
         <script src="js/site.js"></script>
     </body>
 </html>
