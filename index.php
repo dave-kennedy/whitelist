@@ -5,59 +5,7 @@
         <title>dnsmasq Configuration</title>
         <link href="css/flick/jquery-ui-1.10.3.min.css" rel="stylesheet" />
         <link href="css/jquery-ui-vertabs.css" rel="stylesheet" />
-        <style>
-            body {
-                font-family: Verdana,Arial,sans-serif;
-                margin: 0;
-            }
-            #container {
-                margin: 0 auto;
-                width: 75%;
-            }
-            #header {
-                padding: 0 1em;
-            }
-            #header img {
-                vertical-align: top;
-            }
-            #result {
-                border: 1px solid;
-                border-radius: 2px;
-                padding: 0.5em;
-            }
-            .result-success {
-                background-color: #efe;
-                color: #090;
-            }
-            .result-error {
-                background-color: #fee;
-                color: #c00;
-            }
-            .category-title, .new-category-title {
-                border: 1px solid #ddd;
-                border-radius: 2px;
-                padding: 0.4em;
-            }
-            .category-contents, .new-category-contents {
-                border: 1px solid #ddd;
-                border-radius: 2px;
-                -moz-box-sizing: border-box;
-                box-sizing: border-box;
-                height: 20em;
-                padding: 0.4em;
-                width: 100%;
-            }
-            .password {
-                border: 1px solid #ddd;
-                border-radius: 2px;
-                display: block;
-                float: right;
-                font-size: 1.1em;
-                margin-left: 5px;
-                padding: 0.4em;
-                vertical-align: top;
-            }
-        </style>
+        <link href="css/site.css" rel="stylesheet" />
     </head>
     <body>
         <div id="container">
@@ -101,76 +49,6 @@
         <script src="js/jquery-2.0.3.min.js"></script>
         <script src="js/jquery-ui-1.10.3.min.js"></script>
         <script src="js/jquery-ui-vertabs.js"></script>
-        <script>
-            $(function () {
-                var action = $('#action'),
-                    categories = $('#categories').vertabs({
-                        'addTab': function (title, newID) {
-                            var newTitle = $('<p><input class="category-title" name="' + newID + '[category]" type="text" value="' + title + '" /></p>'),
-                                newContents = $('<p><textarea class="category-contents" name="' + newID + '[contents]"></textarea></p>');
-                            
-                            $('#' + newID).append(newTitle).append(newContents);
-                            
-                            newContents.find('textarea').focus();
-                        },
-                        'renameTab': function (title, newID) {
-                            $('#' + newID).find('.category-title').attr('name', newID + '[category]').addBack()
-                                .find('.category-contents').attr('name', newID + '[contents]');
-                        }
-                    }),
-                    form = $('#form'),
-                    title;
-                
-                $('body').focusin(function (e) {
-                    var target = $(e.target);
-                    
-                    if (target.hasClass('category-title')) {
-                        title = target.val().trim();
-                        return;
-                    }
-                }).focusout(function (e) {
-                    var target = $(e.target),
-                        newTitle;
-                    
-                    if (target.hasClass('category-title')) {
-                        newTitle = target.val().trim();
-                        categories.vertabs('renameTab', title, newTitle);
-                        return;
-                    }
-                    
-                    if (target.hasClass('new-category-title')) {
-                        newTitle = target.val().trim();
-                        categories.vertabs('addTab', newTitle);
-                        return;
-                    }
-                });
-                
-                $('#save').click(function (e) {
-                    e.preventDefault();
-                    action.val('save');
-                    form.submit();
-                }).button();
-                
-                $('#upload').click(function (e) {
-                    var password = $('#password');
-                    
-                    e.preventDefault();
-                    
-                    if (password.val() === '') {
-                        password.css({
-                            'background-color': '#fee',
-                            'border-color': '#c00',
-                            'color': '#c00'
-                        }).effect('bounce').focus();
-                        return;
-                    }
-                    
-                    action.val('upload');
-                    form.submit();
-                }).button();
-                
-                $('#result').hide().fadeIn().delay(3000).fadeOut();
-            });
-        </script>
+        <script src="js/site.js"></script>
     </body>
 </html>
