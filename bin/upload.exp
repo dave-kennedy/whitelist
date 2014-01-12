@@ -1,9 +1,5 @@
 #!/usr/bin/expect -f
 
-# Enable some diagnostic output
-# WARNING: This will make the password visible in logs
-#exp_internal 1
-
 set config [lindex $argv 0]
 set tempFile [lindex $argv 1]
 

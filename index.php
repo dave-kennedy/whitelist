@@ -31,7 +31,7 @@
                 <div id="categories">
                     <ul>
                         <?php echo $categoryTabs; ?>
-                        <li id="new-category-tab"><a href="#new-category">+ New</a></li>
+                        <li><a href="#new-category">+ New</a></li>
                     </ul>
                     <?php echo $categoryDivs; ?>
                     <div id="new-category">

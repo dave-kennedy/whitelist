@@ -13,18 +13,18 @@
     $uploadResult = "";
     
     $categories;
-    $category;
-    $categoryID;
+    $panelID;
+    $title;
     $url;
     $urls;
     
     function readConfig($config, $domainRegEx, $nameServer) {
-        $category;
         $categories;
         $comment;
         $contents;
         $line;
         $matches;
+        $title;
         $url;
         
         $contents = file($config);
@@ -34,9 +34,9 @@
             
             // e.g. "#[Category: Programming]"
             if (preg_match("/^#\[Category: (.*)\]$/", $line, $matches)) {
-                $category = $matches[1];
+                $title = $matches[1];
                 
-                $categories[$category] = [];
+                $categories[$title] = [];
                 
                 unset($matches);
                 continue;
@@ -44,7 +44,7 @@
             
             // If we haven't found a category yet (i.e. we are still reading the first few lines of the config file)
             // then get out
-            if (!isset($category)) {
+            if (!isset($title)) {
                 continue;
             }
             
@@ -52,7 +52,7 @@
             if (preg_match("/^server=\/($domainRegEx)\/$nameServer$/", $line, $matches)) {
                 $url = $matches[1];
                 
-                $categories[$category][] = "$url\n";
+                $categories[$title][] = "$url\n";
                 
                 unset($matches);
                 continue;
@@ -63,7 +63,7 @@
                 $url = $matches[1];
                 $comment = $matches[2];
                 
-                $categories[$category][] = "$url $comment\n";
+                $categories[$title][] = "$url $comment\n";
                 
                 unset($matches);
                 continue;
@@ -73,7 +73,7 @@
             if (preg_match("/^(#.*)$/", $line, $matches)) {
                 $comment = $matches[1];
                 
-                $categories[$category][] = "\n$comment\n";
+                $categories[$title][] = "\n$comment\n";
                 
                 unset($matches);
                 continue;
@@ -84,12 +84,12 @@
     }
     
     function saveConfig($config, $domainRegEx, $nameServer) {
-        $category;
         $comment;
         $contents;
         $handle;
         $line;
         $name;
+        $title;
         $url;
         $value;
         
@@ -103,14 +103,14 @@
                 continue;
             }
             
-            $category = trim($value['category']);
+            $title = trim($value['title']);
             $contents = trim($value['contents']);
             
-            if ($category == "" || $contents == "") {
+            if ($title == "" || $contents == "") {
                 continue;
             }
             
-            fwrite($handle, "\n#[Category: " . $category . "]\n");
+            fwrite($handle, "\n#[Category: " . $title . "]\n");
             
             foreach (preg_split("/\n/", $contents) as $line) {
                 $line = trim($line);
@@ -184,12 +184,6 @@
         return $tempFile;
     }
     
-    function makeID($string) {
-        $string = preg_replace('/[\W]+/', '-', $string);
-        
-        return strtolower($string);
-    }
-    
     if (!file_exists($config)) {
         die("$config not found. Please make sure the file exists and refresh the page.");
     }
@@ -212,12 +206,12 @@
     
     $categories = readConfig($config, $domainRegEx, $nameServer);
     
-    foreach ($categories as $category => $contents) {
-        $categoryID = makeID($category);
-        $categoryTabs .= "<li><a href=\"#$categoryID\">$category</a></li>";
-        $categoryDivs .= "<div id=\"$categoryID\">
-            <p><input class=\"category-title\" name=\"" . $categoryID . "[category]\" type=\"text\" value=\"$category\" /></p>
-            <p><textarea class=\"category-contents\" name=\"" . $categoryID . "[contents]\">";
+    foreach ($categories as $title => $contents) {
+        $panelID = "ui-vertabs-tab-" . rand(1000, 9999);
+        $categoryTabs .= "<li><a href=\"#$panelID\">$title</a></li>";
+        $categoryDivs .= "<div id=\"$panelID\">
+            <p><input class=\"category-title\" name=\"" . $panelID . "[category]\" type=\"text\" value=\"$title\" /></p>
+            <p><textarea class=\"category-contents\" name=\"" . $panelID . "[contents]\">";
         
         foreach ($contents as $line) {
             $categoryDivs .= $line;
