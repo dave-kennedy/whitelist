@@ -210,7 +210,7 @@
         $panelID = "ui-vertabs-tab-" . rand(1000, 9999);
         $categoryTabs .= "<li><a href=\"#$panelID\">$title</a></li>";
         $categoryDivs .= "<div id=\"$panelID\">
-            <p><input class=\"category-title\" name=\"" . $panelID . "[category]\" type=\"text\" value=\"$title\" /></p>
+            <p><input class=\"category-title\" name=\"" . $panelID . "[title]\" type=\"text\" value=\"$title\" /></p>
             <p><textarea class=\"category-contents\" name=\"" . $panelID . "[contents]\">";
         
         foreach ($contents as $line) {
