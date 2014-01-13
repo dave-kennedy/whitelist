@@ -40,8 +40,8 @@
                     </div>
                 </div>
                 <p style="text-align: right;">
-                    <input class="button" id="save" type="button" value="Save" />
-                    <input class="button" id="upload" type="button" value="Upload" />
+                    <span class="button" id="save">Save</span>
+                    <span class="button" id="upload">Upload</span>
                     <input class="password" id="password" name="password" placeholder="Password" type="password" />
                 </p>
             </form>

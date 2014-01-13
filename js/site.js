@@ -1,5 +1,23 @@
 $(function () {
+    var action = $('#action'),
+        categories = $('#categories').vertabs({
+            'addTab': function (title, panelID) {
+                var newTitle = $('<p><input class="category-title" name="' + panelID + '[title]" type="text" value="' + title + '" /></p>'),
+                    newContents = $('<p><textarea class="category-contents" name="' + panelID + '[contents]"></textarea></p>');
+                
+                $('#' + panelID).append(newTitle).append(newContents);
+                
+                newContents.find('textarea').focus();
+            }
+        }),
+        form = $('#form'),
+        submitted = false;
+    
     function save() {
+        if (submitted) {
+            return;
+        }
+        
         action.val('save');
         form.submit();
     }
@@ -16,22 +34,13 @@ $(function () {
             return;
         }
         
+        if (submitted) {
+            return;
+        }
+        
         action.val('upload');
         form.submit();
     }
-    
-    var action = $('#action'),
-        categories = $('#categories').vertabs({
-            'addTab': function (title, panelID) {
-                var newTitle = $('<p><input class="category-title" name="' + panelID + '[title]" type="text" value="' + title + '" /></p>'),
-                    newContents = $('<p><textarea class="category-contents" name="' + panelID + '[contents]"></textarea></p>');
-                
-                $('#' + panelID).append(newTitle).append(newContents);
-                
-                newContents.find('textarea').focus();
-            }
-        }),
-        form = $('#form');
     
     $('body').focusout(function (e) {
         var target = $(e.target),
