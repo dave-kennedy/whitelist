@@ -1,4 +1,25 @@
 $(function () {
+    function save() {
+        action.val('save');
+        form.submit();
+    }
+    
+    function upload() {
+        var password = $('#password');
+        
+        if (password.val() === '') {
+            password.css({
+                'background-color': '#fee',
+                'border-color': '#c00',
+                'color': '#c00'
+            }).effect('bounce').focus();
+            return;
+        }
+        
+        action.val('upload');
+        form.submit();
+    }
+    
     var action = $('#action'),
         categories = $('#categories').vertabs({
             'addTab': function (title, panelID) {
@@ -29,29 +50,23 @@ $(function () {
             categories.vertabs('addTab', title);
             return;
         }
+    }).keypress(function (e) {
+        var key = (e.keyCode ? e.keyCode : e.which),
+            target = $(e.target);
+        
+        if (key == 13 && target.attr('id') == 'password') {
+            upload();
+        }
     });
     
     $('#save').click(function (e) {
         e.preventDefault();
-        action.val('save');
-        form.submit();
+        save();
     }).button();
     
     $('#upload').click(function (e) {
-        var password = $('#password');
-        
-        if (password.val() === '') {
-            password.css({
-                'background-color': '#fee',
-                'border-color': '#c00',
-                'color': '#c00'
-            }).effect('bounce').focus();
-            return;
-        }
-        
         e.preventDefault();
-        action.val('upload');
-        form.submit();
+        upload();
     }).button();
     
     $('#result').hide().fadeIn().delay(3000).fadeOut();
