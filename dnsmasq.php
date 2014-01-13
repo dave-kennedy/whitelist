@@ -103,8 +103,8 @@
                 continue;
             }
             
-            $title = trim($value['title']);
-            $contents = trim($value['contents']);
+            $title = trim($value["title"]);
+            $contents = trim($value["contents"]);
             
             if ($title == "" || $contents == "") {
                 continue;
@@ -154,7 +154,7 @@
     }
     
     function getCygPath($winPath) {
-        $cygPath = preg_replace("/\\\\/", '/', $winPath);
+        $cygPath = preg_replace("/\\\\/", "/", $winPath);
         $cygPath = preg_replace("/^([a-z]):/i", "/cygdrive/$1", $cygPath);
         
         return strtolower($cygPath);

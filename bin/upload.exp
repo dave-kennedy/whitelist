@@ -1,5 +1,7 @@
 #!/usr/bin/expect -f
 
+set timeout 5
+
 set config [lindex $argv 0]
 set tempFile [lindex $argv 1]
 
@@ -18,10 +20,13 @@ expect {
     }
     -re ".*password.*" {
         exp_send "$password\r"
+        expect {
+            -re ".*denied.*" {
+                exit 1
+            }
+        }
     }
 }
-
-expect eof
 
 spawn /usr/bin/ssh root@192.168.1.1 "/etc/init.d/dnsmasq restart"
 
@@ -32,7 +37,10 @@ expect {
     }
     -re ".*password.*" {
         exp_send "$password\r"
+        expect {
+            -re ".*denied.*" {
+                exit 1
+            }
+        }
     }
 }
-
-expect eof
