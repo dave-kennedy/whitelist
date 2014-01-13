@@ -42,7 +42,7 @@
                 <p style="text-align: right;">
                     <input class="button" id="save" type="button" value="Save" />
                     <input class="button" id="upload" type="button" value="Upload" />
-                    <input class="password" id="password" placeholder="Password" type="password" />
+                    <input class="password" id="password" name="password" placeholder="Password" type="password" />
                 </p>
             </form>
         </div>

@@ -154,21 +154,20 @@
     }
     
     function getCygPath($winPath) {
-        $cygPath = preg_replace("/^([a-z]):/i", "/cygdrive/$1", $winPath);
+        $cygPath = preg_replace("/\\\\/", '/', $winPath);
+        $cygPath = preg_replace("/^([a-z]):/i", "/cygdrive/$1", $cygPath);
         
-        return $cygPath;
+        return strtolower($cygPath);
     }
     
     function uploadConfig($script, $config) {
         $script = getCygPath($script);
         $config = getCygPath($config);
-        $tempFile = getCygPath($makeTemp());
+        $tempFile = getCygPath(makeTemp());
         
         $command = "c:/cygwin64/bin/expect.exe -f $script $config $tempFile";
         
         exec($command, $output, $exitCode);
-        
-        unlink($tempFile);
         
         return $exitCode;
     }
