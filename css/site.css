@@ -6,7 +6,6 @@ input[type="text"],
 input[type="password"] {
     border: 1px solid #ddd;
     border-radius: 2px;
-    font-size: 1.1em;
     padding: 0.4em;
     vertical-align: top;
 }
@@ -31,10 +30,12 @@ textarea {
 }
 #new-category {
     float: left;
+    font-size: 1.1em;
     margin-right: 7px;
 }
 #password {
     float: right;
+    font-size: 1.1em;
     margin-left: 5px;
 }
 #result {
@@ -50,11 +51,6 @@ textarea {
     background-color: #fee;
     color: #c00;
 }
-.remove-category {
-    color: #0073ea;
-    line-height: 2.2;
-}
-.remove-category:hover {
-    color: #ff0084;
-    cursor: pointer;
+.category-title {
+    margin-right: 7px;
 }

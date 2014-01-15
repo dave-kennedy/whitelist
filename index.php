@@ -3,7 +3,6 @@
 <html>
     <head>
         <title>dnsmasq Configuration</title>
-        <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
         <link href="css/flick/jquery-ui-1.10.3.min.css" rel="stylesheet" />
         <link href="css/jquery-ui-vertabs.min.css" rel="stylesheet" />
         <link href="css/site.css" rel="stylesheet" />
@@ -20,8 +19,8 @@
             <?php echo $saveResult; ?>
             <?php echo $uploadResult; ?>
             <p>
-                To add a new category, enter the name below and click the add button. To delete a category, click the
-                little "x" button next to the category name.
+                To add a new category, enter the name below and click the add button. To remove a category, click the
+                delete button next to the category name.
             </p>
             <p>
                 Click the save button below to save the configuration locally. To upload the configuration and restart

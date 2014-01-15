@@ -220,8 +220,7 @@
     foreach ($categories as $title => $contents) {
         $categoryTabs .= "<li><a href=\"#category-$i\">$title</a></li>";
         $categoryDivs .= "<div id=\"category-$i\">
-            <p><input class=\"category-title\" name=\"category-$i" . "[title]\" type=\"text\" value=\"$title\" />
-                <i class=\"fa fa-times-circle remove-category\"></i></p>
+            <p><input class=\"category-title\" name=\"category-$i" . "[title]\" type=\"text\" value=\"$title\" /></p>
             <p><textarea class=\"category-contents\" name=\"category-$i" . "[contents]\">";
         
         foreach ($contents as $line) {
