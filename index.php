@@ -37,11 +37,11 @@
                 <div>
                     <div style="float: left;">
                         <input id="new-category" placeholder="New category" tabIndex="1" type="text" />
-                        <span id="add-category" tabIndex="2">Add</span>
+                        <span id="add" tabIndex="2">Add</span>
                     </div>
                     <div style="float: right;">
-                        <span id="save-config" tabIndex="3">Save</span>
-                        <span id="upload-config" tabIndex="4">Upload</span>
+                        <span id="save" tabIndex="3">Save</span>
+                        <span id="upload" tabIndex="4">Upload</span>
                         <input id="password" name="password" placeholder="Password" tabIndex="5" type="password" />
                     </div>
                 </div>

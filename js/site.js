@@ -1,12 +1,11 @@
 $(function () {
     var categories = $('#categories').vertabs({
             'add': function (event, ui) {
-                var newTitle = $('<p><input class="category-title" name="' + ui.newPanel.attr('id') + '[title]" type="text" value="' + ui.newTab.text() + '" /></p>'),
+                var newButton = $('<span class="remove-category">Delete</span>').button(),
+                    newTitle = $('<p><input class="category-title" name="' + ui.newPanel.attr('id') + '[title]" type="text" value="' + ui.newTab.text() + '" /></p>'),
                     newContents = $('<p><textarea class="category-contents" name="' + ui.newPanel.attr('id') + '[contents]"></textarea></p>');
                 
-                newTitle.append($('<span class="remove-category">Delete</span>').button());
-                
-                ui.newPanel.append(newTitle).append(newContents);
+                ui.newPanel.append(newTitle.append(newButton)).append(newContents);
                 
                 $(this).vertabs('option', 'active', ui.newTab.index());
                 
@@ -105,11 +104,11 @@ $(function () {
         }
     });
     
-    $('#add-category').click(addCategory).button();
+    $('#add').click(addCategory).button();
     
-    $('#save-config').click(saveConfig).button();
+    $('#save').click(saveConfig).button();
     
-    $('#upload-config').click(uploadConfig).button();
+    $('#upload').click(uploadConfig).button();
     
     $('#result').hide().fadeIn().delay(3000).fadeOut();
     
