@@ -104,11 +104,23 @@ $(function () {
         }
     });
     
-    $('#add').click(addCategory).button();
+    $('#add').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            addCategory();
+        }
+    });
     
-    $('#save').click(saveConfig).button();
+    $('#save').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            saveConfig();
+        }
+    });
     
-    $('#upload').click(uploadConfig).button();
+    $('#upload').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            uploadConfig();
+        }
+    });
     
     $('#result').hide().fadeIn().delay(3000).fadeOut();
     
