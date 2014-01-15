@@ -1,7 +1,8 @@
 $(function () {
     var categories = $('#categories').vertabs({
             'add': function (event, ui) {
-                var newTitle = $('<p><input class="category-title" name="' + ui.newPanel.attr('id') + '[title]" type="text" value="' + ui.newTab.text() + '" /></p>'),
+                var newTitle = $('<p><input class="category-title" name="' + ui.newPanel.attr('id') + '[title]" type="text" value="' + ui.newTab.text() + '" />' +
+                                     '<i class="fa fa-times-circle remove-category"></i></p>'),
                     newContents = $('<p><textarea class="category-contents" name="' + ui.newPanel.attr('id') + '[contents]"></textarea></p>');
                 
                 ui.newPanel.append(newTitle).append(newContents);
@@ -61,7 +62,16 @@ $(function () {
         $('#form').submit();
     }
     
-    $('body').focusout(function (event) {
+    $('body').click(function (event) {
+        var target = $(event.target);
+        
+        if (target.hasClass('remove-category')) {
+            index = target.closest('.ui-vertabs-panel').index() - 1;
+            
+            categories.vertabs('remove', index);
+            categories.vertabs('option', 'active', 0);
+        }
+    }).focusout(function (event) {
         var target = $(event.target),
             index,
             title;

@@ -50,3 +50,11 @@ textarea {
     background-color: #fee;
     color: #c00;
 }
+.remove-category {
+    color: #0073ea;
+    line-height: 2.2;
+}
+.remove-category:hover {
+    color: #ff0084;
+    cursor: pointer;
+}
