@@ -2,6 +2,23 @@ body {
     font-family: Verdana,Arial,sans-serif;
     margin: 0;
 }
+input[type="text"],
+input[type="password"] {
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    font-size: 1.1em;
+    padding: 0.4em;
+    vertical-align: top;
+}
+textarea {
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 20em;
+    padding: 0.4em;
+    width: 100%;
+}
 #container {
     margin: 0 auto;
     width: 75%;
@@ -11,6 +28,14 @@ body {
 }
 #header img {
     vertical-align: top;
+}
+#new-category {
+    float: left;
+    margin-right: 7px;
+}
+#password {
+    float: right;
+    margin-left: 5px;
 }
 #result {
     border: 1px solid;
@@ -24,28 +49,4 @@ body {
 .result-error {
     background-color: #fee;
     color: #c00;
-}
-.category-title, .new-category-title {
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    padding: 0.4em;
-}
-.category-contents, .new-category-contents {
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    height: 20em;
-    padding: 0.4em;
-    width: 100%;
-}
-.password {
-    border: 1px solid #ddd;
-    border-radius: 2px;
-    display: block;
-    float: right;
-    font-size: 1.1em;
-    margin-left: 5px;
-    padding: 0.4em;
-    vertical-align: top;
 }

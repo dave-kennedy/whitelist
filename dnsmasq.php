@@ -7,16 +7,17 @@
     
     $nameServer = "8.8.8.8";
     
-    $categoryDivs = "";
-    $categoryTabs = "";
-    $saveResult = "";
-    $uploadResult = "";
+    $saveResult;
+    $uploadResult;
     
     $categories;
-    $panelID;
+    $categoryTabs;
+    $categoryDivs;
+    $i;
+    
     $title;
-    $url;
-    $urls;
+    $contents;
+    $line;
     
     function readConfig($config, $domainRegEx, $nameServer) {
         $categories;
@@ -187,6 +188,12 @@
         die("$config not found. Please make sure the file exists and refresh the page.");
     }
     
+    if (!file_exists($script)) {
+        die("$script not found. Please make sure the file exists and refresh the page.");
+    }
+    
+    $saveResult = "";
+    
     if (isset($_POST["action"]) && $_POST["action"] == "save") {
         if (saveConfig($config, $domainRegEx, $nameServer) == 0) {
             $saveResult = "<p class=\"result-success\" id=\"result\">Configuration saved.</p>";
@@ -194,6 +201,8 @@
             $saveResult = "<p class=\"result-error\" id=\"result\">An error occurred while saving the configuration.</p>";
         }
     }
+    
+    $uploadResult = "";
     
     if (isset($_POST["action"]) && $_POST["action"] == "upload") {
         if (uploadConfig($script, $config) == 0) {
@@ -204,18 +213,22 @@
     }
     
     $categories = readConfig($config, $domainRegEx, $nameServer);
+    $categoryTabs = "";
+    $categoryDivs = "";
+    $i = 1;
     
     foreach ($categories as $title => $contents) {
-        $panelID = "ui-vertabs-tab-" . rand(1000, 9999);
-        $categoryTabs .= "<li><a href=\"#$panelID\">$title</a></li>";
-        $categoryDivs .= "<div id=\"$panelID\">
-            <p><input class=\"category-title\" name=\"" . $panelID . "[title]\" type=\"text\" value=\"$title\" /></p>
-            <p><textarea class=\"category-contents\" name=\"" . $panelID . "[contents]\">";
+        $categoryTabs .= "<li><a href=\"#category-$i\">$title</a></li>";
+        $categoryDivs .= "<div id=\"category-$i\">
+            <p><input class=\"category-title\" name=\"category-$i" . "[title]\" type=\"text\" value=\"$title\" /></p>
+            <p><textarea class=\"category-contents\" name=\"category-$i" . "[contents]\">";
         
         foreach ($contents as $line) {
             $categoryDivs .= $line;
         }
         
         $categoryDivs .= "</textarea></p></div>";
+        
+        $i++;
     }
 ?>

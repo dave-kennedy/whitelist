@@ -1,30 +1,47 @@
 $(function () {
-    var action = $('#action'),
-        categories = $('#categories').vertabs({
-            'addTab': function (title, panelID) {
-                var newTitle = $('<p><input class="category-title" name="' + panelID + '[title]" type="text" value="' + title + '" /></p>'),
-                    newContents = $('<p><textarea class="category-contents" name="' + panelID + '[contents]"></textarea></p>');
+    var categories = $('#categories').vertabs({
+            'add': function (event, ui) {
+                var newTitle = $('<p><input class="category-title" name="' + ui.newPanel.attr('id') + '[title]" type="text" value="' + ui.newTab.text() + '" /></p>'),
+                    newContents = $('<p><textarea class="category-contents" name="' + ui.newPanel.attr('id') + '[contents]"></textarea></p>');
                 
-                $('#' + panelID).append(newTitle).append(newContents);
+                ui.newPanel.append(newTitle).append(newContents);
+                
+                $(this).vertabs('option', 'active', ui.newTab.index());
                 
                 newContents.find('textarea').focus();
-            }
+            },
+            'prefix': 'category-'
         }),
-        form = $('#form'),
+        newCategory = $('#new-category'),
+        password = $('#password'),
         submitted = false;
     
-    function save() {
+    function addCategory() {
+        if (newCategory.val() === '') {
+            newCategory.css({
+                'background-color': '#fee',
+                'border-color': '#c00',
+                'color': '#c00'
+            }).effect('bounce').focus();
+            return;
+        }
+        
+        categories.vertabs('add', newCategory.val());
+        newCategory.val('');
+    }
+    
+    function saveConfig() {
         if (submitted) {
             return;
         }
         
-        action.val('save');
-        form.submit();
+        submitted = true;
+        
+        $('#action').val('save');
+        $('#form').submit();
     }
     
-    function upload() {
-        var password = $('#password');
-        
+    function uploadConfig() {
         if (password.val() === '') {
             password.css({
                 'background-color': '#fee',
@@ -38,45 +55,50 @@ $(function () {
             return;
         }
         
-        action.val('upload');
-        form.submit();
+        submitted = true;
+        
+        $('#action').val('upload');
+        $('#form').submit();
     }
     
-    $('body').focusout(function (e) {
-        var target = $(e.target),
-            panelID,
+    $('body').focusout(function (event) {
+        var target = $(event.target),
+            index,
             title;
         
         if (target.hasClass('category-title')) {
-            panelID = target.attr('name').slice(0, -7);
-            title = target.val().trim();
-            categories.vertabs('renameTab', panelID, title);
-            return;
+            index = target.closest('.ui-vertabs-panel').index() - 1;
+            title = target.val();
+            
+            categories.vertabs('rename', index, title);
         }
+    }).keypress(function (event) {
+        var keyCode = event.keyCode,
+            target = $(event.target);
         
-        if (target.hasClass('new-category-title')) {
-            title = target.val().trim();
-            categories.vertabs('addTab', title);
-            return;
-        }
-    }).keypress(function (e) {
-        var key = (e.keyCode ? e.keyCode : e.which),
-            target = $(e.target);
-        
-        if (key == 13 && target.attr('id') == 'password') {
-            upload();
+        if (keyCode === 9 && target.hasClass('category-contents')) {
+            event.preventDefault();
+            newCategory.focus();
         }
     });
     
-    $('#save').click(function (e) {
-        e.preventDefault();
-        save();
-    }).button();
+    newCategory.keypress(function (event) {
+        if (event.keyCode === 13) {
+            addCategory();
+        }
+    });
     
-    $('#upload').click(function (e) {
-        e.preventDefault();
-        upload();
-    }).button();
+    password.keypress(function (event) {
+        if (event.keyCode === 13) {
+            uploadConfig();
+        }
+    });
+    
+    $('#add-category').click(addCategory).button();
+    
+    $('#save-config').click(saveConfig).button();
+    
+    $('#upload-config').click(uploadConfig).button();
     
     $('#result').hide().fadeIn().delay(3000).fadeOut();
 });

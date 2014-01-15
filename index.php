@@ -19,8 +19,8 @@
             <?php echo $saveResult; ?>
             <?php echo $uploadResult; ?>
             <p>
-                To add a new category, click the "+ New" tab on the left. To delete a category, remove all of the URLs
-                from the textbox on the right.
+                To add a new category, enter the name below and click the add button. To delete a category, remove all
+                of the URLs from the textbox on the right.
             </p>
             <p>
                 Click the save button below to save the configuration locally. To upload the configuration and restart
@@ -31,19 +31,20 @@
                 <div id="categories">
                     <ul>
                         <?php echo $categoryTabs; ?>
-                        <li><a href="#new-category">+ New</a></li>
                     </ul>
                     <?php echo $categoryDivs; ?>
-                    <div id="new-category">
-                        <p><input class="new-category-title" placeholder="New category" type="text" /></p>
-                        <p><textarea class="new-category-contents"></textarea></p>
+                </div>
+                <div>
+                    <div style="float: left;">
+                        <input id="new-category" placeholder="New category" tabIndex="1" type="text" />
+                        <span id="add-category" tabIndex="2">Add</span>
+                    </div>
+                    <div style="float: right;">
+                        <span id="save-config" tabIndex="3">Save</span>
+                        <span id="upload-config" tabIndex="4">Upload</span>
+                        <input id="password" name="password" placeholder="Password" tabIndex="5" type="password" />
                     </div>
                 </div>
-                <p style="text-align: right;">
-                    <span class="button" id="save">Save</span>
-                    <span class="button" id="upload">Upload</span>
-                    <input class="password" id="password" name="password" placeholder="Password" type="password" />
-                </p>
             </form>
         </div>
         <script src="js/jquery-2.0.3.min.js"></script>
