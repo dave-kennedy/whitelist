@@ -28,6 +28,15 @@ textarea {
 #header img {
     vertical-align: top;
 }
+#controls {
+    margin: 1em 0;
+}
+#controls:before,
+#controls:after {
+    clear: both;
+    content: "";
+    display: block;
+}
 #new-category {
     float: left;
     font-size: 1.1em;

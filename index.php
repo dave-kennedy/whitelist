@@ -34,7 +34,7 @@
                     </ul>
                     <?php echo $categoryDivs; ?>
                 </div>
-                <div>
+                <div id="controls">
                     <div style="float: left;">
                         <input id="new-category" placeholder="New category" tabIndex="1" type="text" />
                         <span id="add" tabIndex="2">Add</span>
