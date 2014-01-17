@@ -81,6 +81,8 @@
             }
         }
         
+        ksort($categories);
+        
         return $categories;
     }
     
