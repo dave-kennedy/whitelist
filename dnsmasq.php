@@ -28,9 +28,9 @@
         $title;
         $url;
         
-        $contents = file($config);
+        $contents = file_get_contents($config);
         
-        foreach ($contents as $line) {
+        foreach (preg_split("/\n/", $contents) as $line) {
             $line = trim($line);
             
             // e.g. "#[Category: Programming]"
@@ -89,16 +89,14 @@
     function saveConfig($config, $domainRegEx, $nameServer) {
         $comment;
         $contents;
-        $handle;
+        $fileContents;
         $line;
         $name;
         $title;
         $url;
         $value;
         
-        $handle = fopen($config, "w");
-        
-        fwrite($handle, "#[Options]\nbogus-priv\ndomain-needed\nno-resolv\n");
+        $fileContents = "#[Options]\nbogus-priv\ndomain-needed\nno-resolv\n";
         
         foreach ($_POST as $name => $value) {
             // Don't write the values of the action and password fields to the config file
@@ -113,7 +111,7 @@
                 continue;
             }
             
-            fwrite($handle, "\n#[Category: " . $title . "]\n");
+            $fileContents .= "\n#[Category: " . $title . "]\n";
             
             foreach (preg_split("/\n/", $contents) as $line) {
                 $line = trim($line);
@@ -122,7 +120,7 @@
                 if (preg_match("/^($domainRegEx)$/", $line, $matches)) {
                     $url = $matches[1];
                     
-                    fwrite($handle, "server=/$url/$nameServer\n");
+                    $fileContents .= "server=/$url/$nameServer\n";
                     
                     unset($matches);
                     continue;
@@ -133,7 +131,7 @@
                     $url = $matches[1];
                     $comment = $matches[2];
                     
-                    fwrite($handle, "server=/$url/$nameServer $comment\n");
+                    $fileContents .= "server=/$url/$nameServer $comment\n";
                     
                     unset($matches);
                     continue;
@@ -143,7 +141,7 @@
                 if (preg_match("/^(#.*)$/", $line, $matches)) {
                     $comment = $matches[1];
                     
-                    fwrite($handle, "\n$comment\n");
+                    $fileContents .= "\n$comment\n";
                     
                     unset($matches);
                     continue;
@@ -151,7 +149,7 @@
             }
         }
         
-        fclose($handle);
+        file_put_contents($config, $fileContents);
         
         return 0;
     }
@@ -177,11 +175,8 @@
     
     function makeTemp() {
         $tempFile = tempnam("/tmp", "php");
-        $handle = fopen($tempFile, "w");
         
-        fwrite($handle, $_POST["password"]);
-        
-        fclose($handle);
+        file_put_contents($tempFile, $_POST["password"]);
         
         return $tempFile;
     }
