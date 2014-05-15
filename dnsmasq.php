@@ -1,7 +1,11 @@
 <?php
-    $binPath = "c:/wamp/www/dnsmasq/bin";
-    $config = "$binPath/dnsmasq.conf";
-    $script = "$binPath/upload.exp";
+    $binDir = "c:/wamp/www/dnsmasq/bin";
+    $configPath = "$binDir/dnsmasq.conf";
+    $scriptPath = "$binDir/upload.exp";
+    
+    $expectPath = "c:/cygwin64/bin/expect.exe";
+    
+    $tmpDir = "/tmp";
     
     $domainRegEx = "[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*(?:\.[A-Za-z]{2,})";
     
@@ -19,18 +23,18 @@
     $contents;
     $line;
     
-    function readConfig($config, $domainRegEx, $nameServer) {
+    function readConfig($configPath, $domainRegEx, $nameServer) {
         $categories;
         $comment;
-        $contents;
+        $fileContents;
         $line;
         $matches;
         $title;
         $url;
         
-        $contents = file_get_contents($config);
+        $fileContents = file_get_contents($configPath);
         
-        foreach (preg_split("/\n/", $contents) as $line) {
+        foreach (preg_split("/\n/", $fileContents) as $line) {
             $line = trim($line);
             
             // e.g. "#[Category: Programming]"
@@ -86,7 +90,7 @@
         return $categories;
     }
     
-    function saveConfig($config, $domainRegEx, $nameServer) {
+    function saveConfig($configPath, $domainRegEx, $nameServer) {
         $comment;
         $contents;
         $fileContents;
@@ -111,7 +115,7 @@
                 continue;
             }
             
-            $fileContents .= "\n#[Category: " . $title . "]\n";
+            $fileContents .= "\n#[Category: $title]\n";
             
             foreach (preg_split("/\n/", $contents) as $line) {
                 $line = trim($line);
@@ -149,7 +153,7 @@
             }
         }
         
-        file_put_contents($config, $fileContents);
+        file_put_contents($configPath, $fileContents);
         
         return 0;
     }
@@ -161,38 +165,33 @@
         return strtolower($cygPath);
     }
     
-    function uploadConfig($script, $config) {
-        $script = getCygPath($script);
-        $config = getCygPath($config);
-        $tempFile = getCygPath(makeTemp());
+    function uploadConfig($expectPath, $scriptPath, $configPath, $tmpDir) {
+        $scriptPath = getCygPath($scriptPath);
+        $configPath = getCygPath($configPath);
         
-        $command = "c:/cygwin64/bin/expect.exe -f $script $config $tempFile";
+        $tempFile = tempnam($tmpDir, "php");
+        
+        file_put_contents($tempFile, $_POST["password"]);
+        
+        $command = "$expectPath -f $scriptPath $configPath $tempFile";
         
         exec($command, $output, $exitCode);
         
         return $exitCode;
     }
     
-    function makeTemp() {
-        $tempFile = tempnam("/tmp", "php");
-        
-        file_put_contents($tempFile, $_POST["password"]);
-        
-        return $tempFile;
+    if (!file_exists($configPath)) {
+        die("$configPath not found. Please make sure the file exists and refresh the page.");
     }
     
-    if (!file_exists($config)) {
-        die("$config not found. Please make sure the file exists and refresh the page.");
-    }
-    
-    if (!file_exists($script)) {
-        die("$script not found. Please make sure the file exists and refresh the page.");
+    if (!file_exists($scriptPath)) {
+        die("$scriptPath not found. Please make sure the file exists and refresh the page.");
     }
     
     $saveResult = "";
     
     if (isset($_POST["action"]) && $_POST["action"] == "save") {
-        if (saveConfig($config, $domainRegEx, $nameServer) == 0) {
+        if (saveConfig($configPath, $domainRegEx, $nameServer) == 0) {
             $saveResult = "<p class=\"result-success\" id=\"result\">Configuration saved.</p>";
         } else {
             $saveResult = "<p class=\"result-error\" id=\"result\">An error occurred while saving the configuration.</p>";
@@ -202,14 +201,14 @@
     $uploadResult = "";
     
     if (isset($_POST["action"]) && $_POST["action"] == "upload") {
-        if (uploadConfig($script, $config) == 0) {
+        if (uploadConfig($expectPath, $scriptPath, $configPath, $tmpDir) == 0) {
             $uploadResult = "<p class=\"result-success\" id=\"result\">Configuration uploaded.</p>";
         } else {
             $uploadResult = "<p class=\"result-error\" id=\"result\">An error occurred while uploading the configuration.</p>";
         }
     }
     
-    $categories = readConfig($config, $domainRegEx, $nameServer);
+    $categories = readConfig($configPath, $domainRegEx, $nameServer);
     $categoryTabs = "";
     $categoryDivs = "";
     $i = 1;
