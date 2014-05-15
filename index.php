@@ -16,8 +16,7 @@
                     </a>
                 </h2>
             </div>
-            <?php echo $saveResult; ?>
-            <?php echo $uploadResult; ?>
+            <?php echo $actionResult; ?>
             <p>
                 To add a new category, enter the name below and click the add button. To remove a category, click the
                 delete button next to the category name.
@@ -40,9 +39,10 @@
                         <span id="add" tabIndex="2">Add</span>
                     </div>
                     <div style="float: right;">
-                        <span id="save" tabIndex="3">Save</span>
-                        <span id="upload" tabIndex="4">Upload</span>
-                        <input id="password" name="password" placeholder="Password" tabIndex="5" type="password" />
+                        <span id="refresh" tabIndex="3">Refresh</span>
+                        <span id="save" tabIndex="4">Save</span>
+                        <span id="upload" tabIndex="5">Upload</span>
+                        <input id="password" name="password" placeholder="Password" tabIndex="6" type="password" />
                     </div>
                 </div>
             </form>

@@ -3,6 +3,8 @@
     $configPath = "$binDir/dnsmasq.conf";
     $scriptPath = "$binDir/upload.exp";
     
+    $remoteConfigPath = "http://192.168.1.1/dnsmasq.conf";
+    
     $expectPath = "c:/cygwin64/bin/expect.exe";
     
     $tmpDir = "/tmp";
@@ -11,8 +13,7 @@
     
     $nameServer = "8.8.8.8";
     
-    $saveResult;
-    $uploadResult;
+    $actionResult;
     
     $categories;
     $categoryTabs;
@@ -90,6 +91,12 @@
         return $categories;
     }
     
+    function refreshConfig($configPath, $remoteConfigPath) {
+        $fileContents = file_get_contents($remoteConfigPath);
+        
+        file_put_contents($configPath, $fileContents);
+    }
+    
     function saveConfig($configPath, $domainRegEx, $nameServer) {
         $comment;
         $contents;
@@ -154,8 +161,6 @@
         }
         
         file_put_contents($configPath, $fileContents);
-        
-        return 0;
     }
     
     function getCygPath($winPath) {
@@ -188,23 +193,21 @@
         die("$scriptPath not found. Please make sure the file exists and refresh the page.");
     }
     
-    $saveResult = "";
+    $actionResult = "";
     
-    if (isset($_POST["action"]) && $_POST["action"] == "save") {
-        if (saveConfig($configPath, $domainRegEx, $nameServer) == 0) {
-            $saveResult = "<p class=\"result-success\" id=\"result\">Configuration saved.</p>";
-        } else {
-            $saveResult = "<p class=\"result-error\" id=\"result\">An error occurred while saving the configuration.</p>";
-        }
-    }
-    
-    $uploadResult = "";
-    
-    if (isset($_POST["action"]) && $_POST["action"] == "upload") {
+    if (isset($_POST["action"]) && $_POST["action"] == "refresh") {
+        refreshConfig($configPath, $remoteConfigPath);
+        
+        $actionResult = "<p class=\"result-success\" id=\"result\">Configuration refreshed.</p>";
+    } elseif (isset($_POST["action"]) && $_POST["action"] == "save") {
+        saveConfig($configPath, $domainRegEx, $nameServer);
+        
+        $actionResult = "<p class=\"result-success\" id=\"result\">Configuration saved.</p>";
+    } elseif (isset($_POST["action"]) && $_POST["action"] == "upload") {
         if (uploadConfig($expectPath, $scriptPath, $configPath, $tmpDir) == 0) {
-            $uploadResult = "<p class=\"result-success\" id=\"result\">Configuration uploaded.</p>";
+            $actionResult = "<p class=\"result-success\" id=\"result\">Configuration uploaded.</p>";
         } else {
-            $uploadResult = "<p class=\"result-error\" id=\"result\">An error occurred while uploading the configuration.</p>";
+            $actionResult = "<p class=\"result-error\" id=\"result\">An error occurred while uploading the configuration.</p>";
         }
     }
     

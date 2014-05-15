@@ -31,6 +31,17 @@ $(function () {
         newCategory.val('');
     }
     
+    function refreshConfig() {
+        if (submitted) {
+            return;
+        }
+        
+        submitted = true;
+        
+        $('#action').val('refresh');
+        $('#form').submit();
+    }
+    
     function saveConfig() {
         if (submitted) {
             return;
@@ -107,6 +118,12 @@ $(function () {
     $('#add').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
             addCategory();
+        }
+    });
+    
+    $('#refresh').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            refreshConfig();
         }
     });
     
