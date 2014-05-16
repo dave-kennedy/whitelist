@@ -13,13 +13,17 @@ $(function () {
             },
             'prefix': 'category-'
         }),
-        newCategory = $('#new-category'),
-        password = $('#password'),
+        addModal = $('#add-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'New Category' }),
+        exceptionsModal = $('#exceptions-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Exceptions' }),
+        syncModal = $('#sync-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Sync' }),
+        uploadModal = $('#upload-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Upload' }),
         submitted = false;
     
     function addCategory() {
-        if (newCategory.val() === '') {
-            newCategory.css({
+        var title = $('#add-modal-title');
+        
+        if (title.val() === '') {
+            title.css({
                 'background-color': '#fee',
                 'border-color': '#c00',
                 'color': '#c00'
@@ -27,19 +31,10 @@ $(function () {
             return;
         }
         
-        categories.vertabs('add', newCategory.val());
-        newCategory.val('');
-    }
-    
-    function refreshConfig() {
-        if (submitted) {
-            return;
-        }
+        categories.vertabs('add', title.val());
+        title.val('');
         
-        submitted = true;
-        
-        $('#action').val('refresh');
-        $('#form').submit();
+        addModal.dialog('close');
     }
     
     function saveConfig() {
@@ -50,10 +45,23 @@ $(function () {
         submitted = true;
         
         $('#action').val('save');
+        $('#form').append($('#exceptions-modal-contents')).submit();
+    }
+    
+    function syncConfig() {
+        if (submitted) {
+            return;
+        }
+        
+        submitted = true;
+        
+        $('#action').val('sync');
         $('#form').submit();
     }
     
     function uploadConfig() {
+        var password = $('#upload-modal-password');
+        
         if (password.val() === '') {
             password.css({
                 'background-color': '#fee',
@@ -70,7 +78,7 @@ $(function () {
         submitted = true;
         
         $('#action').val('upload');
-        $('#form').submit();
+        $('#form').append(password).submit();
     }
     
     $('body').click(function (event) {
@@ -81,6 +89,12 @@ $(function () {
             
             categories.vertabs('remove', index);
             categories.vertabs('option', 'active', 0);
+            return;
+        }
+        
+        if (target.hasClass('ui-widget-overlay')) {
+            $('.ui-dialog-content').dialog('close');
+            return;
         }
     }).focusout(function (event) {
         var target = $(event.target),
@@ -92,38 +106,37 @@ $(function () {
             title = target.val();
             
             categories.vertabs('rename', index, title);
-        }
-    }).keypress(function (event) {
-        var keyCode = event.keyCode,
-            target = $(event.target);
-        
-        if (keyCode === 9 && target.hasClass('category-contents')) {
-            event.preventDefault();
-            newCategory.focus();
-        }
-    });
-    
-    newCategory.keypress(function (event) {
-        if (event.keyCode === 13) {
-            addCategory();
-        }
-    });
-    
-    password.keypress(function (event) {
-        if (event.keyCode === 13) {
-            uploadConfig();
+            return;
         }
     });
     
     $('#add').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
+            addModal.dialog('open');
+        }
+    });
+    
+    $('#add-modal-cancel').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            addModal.dialog('close');
+        }
+    });
+    
+    $('#add-modal-ok').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
             addCategory();
         }
     });
     
-    $('#refresh').button().on('click keypress', function (event) {
+    $('#exceptions').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
-            refreshConfig();
+            exceptionsModal.dialog('open');
+        }
+    });
+    
+    $('#exceptions-modal-ok').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            exceptionsModal.dialog('close');
         }
     });
     
@@ -133,13 +146,43 @@ $(function () {
         }
     });
     
+    $('#sync').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            syncModal.dialog('open');
+        }
+    });
+    
+    $('#sync-modal-cancel').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            syncModal.dialog('close');
+        }
+    });
+    
+    $('#sync-modal-ok').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            syncConfig();
+        }
+    });
+    
     $('#upload').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            uploadModal.dialog('open');
+        }
+    });
+    
+    $('#upload-modal-cancel').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            uploadModal.dialog('close');
+        }
+    });
+    
+    $('#upload-modal-ok').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
             uploadConfig();
         }
     });
     
-    $('#result').hide().fadeIn().delay(3000).fadeOut();
+    $('.remove-category').button();
     
-    $('.category-title').after($('<span class="remove-category">Delete</span>').button());
+    $('#result').hide().fadeIn().delay(3000).fadeOut();
 });

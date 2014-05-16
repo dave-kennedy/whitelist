@@ -1,50 +1,38 @@
 <?php
-    $binDir = "c:/wamp/www/dnsmasq/bin";
-    $configPath = "$binDir/dnsmasq.conf";
-    $scriptPath = "$binDir/upload.exp";
+    $settings = array(
+        "configPath" => "c:/wamp/www/dnsmasq/bin/dnsmasq.conf",
+        "scriptPath" => "c:/wamp/www/dnsmasq/bin/upload.exp",
+        "remoteConfigUrl" => "http://192.168.1.1/dnsmasq.conf",
+        "expectPath" => "c:/cygwin64/bin/expect.exe",
+        "tmpDir" => "/tmp",
+        "domainRegEx" => "[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*(?:\.[A-Za-z]{2,})",
+        "ipRegEx" => "\d\.\d\.\d\.\d",
+        "nameServer" => "8.8.8.8"
+    );
     
-    $remoteConfigPath = "http://192.168.1.1/dnsmasq.conf";
-    
-    $expectPath = "c:/cygwin64/bin/expect.exe";
-    
-    $tmpDir = "/tmp";
-    
-    $domainRegEx = "[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*(?:\.[A-Za-z]{2,})";
-    
-    $nameServer = "8.8.8.8";
-    
-    $actionResult;
-    
-    $categories;
-    $categoryTabs;
-    $categoryDivs;
-    $i;
-    
-    $title;
-    $contents;
-    $line;
-    
-    function readConfig($configPath, $domainRegEx, $nameServer) {
-        $categories;
-        $comment;
-        $fileContents;
-        $line;
-        $matches;
-        $title;
-        $url;
+    function readConfig() {
+        global $settings;
         
-        $fileContents = file_get_contents($configPath);
+        $categories = [];
+        $exceptions = [];
+        $exceptionMode = false;
+        
+        $fileContents = file_get_contents($settings["configPath"]);
         
         foreach (preg_split("/\n/", $fileContents) as $line) {
             $line = trim($line);
             
             // e.g. "#[Category: Programming]"
             if (preg_match("/^#\[Category: (.*)\]$/", $line, $matches)) {
+                $exceptionMode = false;
                 $title = $matches[1];
                 
-                $categories[$title] = [];
-                
                 unset($matches);
+                continue;
+            }
+            
+            if ($line == "#[Exceptions]") {
+                $exceptionMode = true;
                 continue;
             }
             
@@ -55,21 +43,29 @@
             }
             
             // e.g. "server=/stackoverflow.com/8.8.8.8"
-            if (preg_match("/^server=\/($domainRegEx)\/$nameServer$/", $line, $matches)) {
-                $url = $matches[1];
+            if (preg_match("/^server=\/(" . $settings["domainRegEx"] . ")\/" . $settings["ipRegEx"] . "$/", $line, $matches)) {
+                $domain = $matches[1];
                 
-                $categories[$title][] = "$url\n";
+                if ($exceptionMode) {
+                    $exceptions[] = "$domain\n";
+                } else {
+                    $categories[$title][] = "$domain\n";
+                }
                 
                 unset($matches);
                 continue;
             }
             
             // e.g. "server=/stackoverflow.com/8.8.8.8 #comment"
-            if (preg_match("/^server=\/($domainRegEx)\/$nameServer ?(#.*)$/", $line, $matches)) {
-                $url = $matches[1];
+            if (preg_match("/^server=\/(" . $settings["domainRegEx"] . ")\/" . $settings["ipRegEx"] . " ?(#.*)$/", $line, $matches)) {
+                $domain = $matches[1];
                 $comment = $matches[2];
                 
-                $categories[$title][] = "$url $comment\n";
+                if ($exceptionMode) {
+                    $exceptions[] = "$domain $comment\n";
+                } else {
+                    $categories[$title][] = "$domain $comment\n";
+                }
                 
                 unset($matches);
                 continue;
@@ -79,7 +75,11 @@
             if (preg_match("/^(#.*)$/", $line, $matches)) {
                 $comment = $matches[1];
                 
-                $categories[$title][] = "\n$comment\n";
+                if ($exceptionMode) {
+                    $exceptions[] = "\n$comment\n";
+                } else {
+                    $categories[$title][] = "\n$comment\n";
+                }
                 
                 unset($matches);
                 continue;
@@ -88,61 +88,80 @@
         
         ksort($categories);
         
-        return $categories;
+        return array("categories" => $categories, "exceptions" => $exceptions);
     }
     
-    function refreshConfig($configPath, $remoteConfigPath) {
-        $fileContents = file_get_contents($remoteConfigPath);
+    function syncConfig() {
+        global $settings;
         
-        file_put_contents($configPath, $fileContents);
+        $fileContents = file_get_contents($settings["remoteConfigUrl"]);
+        
+        file_put_contents($settings["configPath"], $fileContents);
     }
     
-    function saveConfig($configPath, $domainRegEx, $nameServer) {
-        $comment;
-        $contents;
-        $fileContents;
-        $line;
-        $name;
-        $title;
-        $url;
-        $value;
+    function saveConfig() {
+        global $settings;
+        
+        $exceptionMode = false;
         
         $fileContents = "#[Options]\nbogus-priv\ndomain-needed\nno-resolv\n";
         
-        foreach ($_POST as $name => $value) {
+        foreach ($_POST as $key => $value) {
             // Don't write the values of the action and password fields to the config file
-            if ($name == "action" || $name == "password" || $value == "") {
+            if ($key == "action" || $key == "password" || $value == "") {
                 continue;
             }
             
-            $title = trim($value["title"]);
-            $contents = trim($value["contents"]);
+            if ($key == "exceptions") {
+                $exceptionMode = true;
+                
+                $contents = trim($value);
+                
+                if ($contents == "") {
+                    continue;
+                }
+                
+                $fileContents .= "\n#[Exceptions]\n";
+            } else {
+                $exceptionMode = false;
             
-            if ($title == "" || $contents == "") {
-                continue;
+                $title = trim($value["title"]);
+                $contents = trim($value["contents"]);
+                
+                if ($title == "" || $contents == "") {
+                    continue;
+                }
+                
+                $fileContents .= "\n#[Category: $title]\n";
             }
-            
-            $fileContents .= "\n#[Category: $title]\n";
             
             foreach (preg_split("/\n/", $contents) as $line) {
                 $line = trim($line);
                 
                 // e.g. "stackoverflow.com"
-                if (preg_match("/^($domainRegEx)$/", $line, $matches)) {
-                    $url = $matches[1];
+                if (preg_match("/^(" . $settings["domainRegEx"] . ")$/", $line, $matches)) {
+                    $domain = $matches[1];
                     
-                    $fileContents .= "server=/$url/$nameServer\n";
+                    if ($exceptionMode) {
+                        $fileContents .= "server=/$domain/0.0.0.0\n";
+                    } else {
+                        $fileContents .= "server=/$domain/" . $settings["nameServer"] . "\n";
+                    }
                     
                     unset($matches);
                     continue;
                 }
                 
                 // e.g. "stackoverflow.com #comment"
-                if (preg_match("/^($domainRegEx) ?(#.*)$/", $line, $matches)) {
-                    $url = $matches[1];
+                if (preg_match("/^(" . $settings["domainRegEx"] . ") ?(#.*)$/", $line, $matches)) {
+                    $domain = $matches[1];
                     $comment = $matches[2];
                     
-                    $fileContents .= "server=/$url/$nameServer $comment\n";
+                    if ($exceptionMode) {
+                        $fileContents .= "server=/$domain/0.0.0.0 $comment\n";
+                    } else {
+                        $fileContents .= "server=/$domain/" . $settings["nameServer"] . " $comment\n";
+                    }
                     
                     unset($matches);
                     continue;
@@ -160,7 +179,7 @@
             }
         }
         
-        file_put_contents($configPath, $fileContents);
+        file_put_contents($settings["configPath"], $fileContents);
     }
     
     function getCygPath($winPath) {
@@ -170,64 +189,49 @@
         return strtolower($cygPath);
     }
     
-    function uploadConfig($expectPath, $scriptPath, $configPath, $tmpDir) {
-        $scriptPath = getCygPath($scriptPath);
-        $configPath = getCygPath($configPath);
+    function uploadConfig() {
+        global $settings;
         
-        $tempFile = tempnam($tmpDir, "php");
+        $scriptPath = getCygPath($settings["scriptPath"]);
+        $configPath = getCygPath($settings["configPath"]);
+        
+        $tempFile = tempnam($settings["tmpDir"], "php");
         
         file_put_contents($tempFile, $_POST["password"]);
         
-        $command = "$expectPath -f $scriptPath $configPath $tempFile";
+        $command = $settings["expectPath"] . " -f $scriptPath $configPath $tempFile";
         
         exec($command, $output, $exitCode);
         
         return $exitCode;
     }
     
-    if (!file_exists($configPath)) {
-        die("$configPath not found. Please make sure the file exists and refresh the page.");
-    }
-    
-    if (!file_exists($scriptPath)) {
-        die("$scriptPath not found. Please make sure the file exists and refresh the page.");
-    }
-    
-    $actionResult = "";
-    
-    if (isset($_POST["action"]) && $_POST["action"] == "refresh") {
-        refreshConfig($configPath, $remoteConfigPath);
+    function getActionResult() {
+        $result["actionResult"]["action"] = "";
+        $result["actionResult"]["success"] = false;
         
-        $actionResult = "<p class=\"result-success\" id=\"result\">Configuration refreshed.</p>";
-    } elseif (isset($_POST["action"]) && $_POST["action"] == "save") {
-        saveConfig($configPath, $domainRegEx, $nameServer);
-        
-        $actionResult = "<p class=\"result-success\" id=\"result\">Configuration saved.</p>";
-    } elseif (isset($_POST["action"]) && $_POST["action"] == "upload") {
-        if (uploadConfig($expectPath, $scriptPath, $configPath, $tmpDir) == 0) {
-            $actionResult = "<p class=\"result-success\" id=\"result\">Configuration uploaded.</p>";
-        } else {
-            $actionResult = "<p class=\"result-error\" id=\"result\">An error occurred while uploading the configuration.</p>";
-        }
-    }
-    
-    $categories = readConfig($configPath, $domainRegEx, $nameServer);
-    $categoryTabs = "";
-    $categoryDivs = "";
-    $i = 1;
-    
-    foreach ($categories as $title => $contents) {
-        $categoryTabs .= "<li><a href=\"#category-$i\">$title</a></li>";
-        $categoryDivs .= "<div id=\"category-$i\">
-            <p><input class=\"category-title\" name=\"category-$i" . "[title]\" type=\"text\" value=\"$title\" /></p>
-            <p><textarea class=\"category-contents\" name=\"category-$i" . "[contents]\">";
-        
-        foreach ($contents as $line) {
-            $categoryDivs .= $line;
+        if (isset($_POST["action"]) && $_POST["action"] == "sync") {
+            syncConfig();
+            
+            $result["actionResult"]["action"] = "sync";
+            $result["actionResult"]["success"] = true;
+            
+        } elseif (isset($_POST["action"]) && $_POST["action"] == "save") {
+            saveConfig();
+            
+            $result["actionResult"]["action"] = "sync";
+            $result["actionResult"]["success"] = true;
+            
+        } elseif (isset($_POST["action"]) && $_POST["action"] == "upload") {
+            $result["actionResult"]["action"] = "sync";
+            
+            if (uploadConfig() == 0) {
+                $result["actionResult"]["success"] = true;
+            }
         }
         
-        $categoryDivs .= "</textarea></p></div>";
-        
-        $i++;
+        return $result;
     }
+    
+    $viewData = array_merge(getActionResult(), readConfig());
 ?>

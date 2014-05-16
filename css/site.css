@@ -14,7 +14,7 @@ textarea {
     border-radius: 2px;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-    height: 20em;
+    height: 12em;
     padding: 0.4em;
     width: 100%;
 }
@@ -37,16 +37,6 @@ textarea {
     content: "";
     display: block;
 }
-#new-category {
-    float: left;
-    font-size: 1.1em;
-    margin-right: 7px;
-}
-#password {
-    float: right;
-    font-size: 1.1em;
-    margin-left: 5px;
-}
 #result {
     border: 1px solid;
     border-radius: 2px;
@@ -62,4 +52,7 @@ textarea {
 }
 .category-title {
     margin-right: 7px;
+}
+.category-contents {
+    height: 20em;
 }
