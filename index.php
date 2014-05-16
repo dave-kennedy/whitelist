@@ -17,24 +17,16 @@
                 </h2>
             </div>
             <?php
-                if ($viewData["actionResult"]["action"] == "sync" && $viewData["actionResult"]["success"] == true) {
-                    echo "<p class=\"result-success\" id=\"result\">Configuration synced.</p>";
-                } elseif ($viewData["actionResult"]["action"] == "save" && $viewData["actionResult"]["success"] == true) {
+                if ($viewData["actionResult"]["action"] == "save" && $viewData["actionResult"]["success"] == true) {
                     echo "<p class=\"result-success\" id=\"result\">Configuration saved.</p>";
+                } elseif ($viewData["actionResult"]["action"] == "sync" && $viewData["actionResult"]["success"] == true) {
+                    echo "<p class=\"result-success\" id=\"result\">Configuration synced.</p>";
                 } elseif ($viewData["actionResult"]["action"] == "upload" && $viewData["actionResult"]["success"] == true) {
                     "<p class=\"result-success\" id=\"result\">Configuration uploaded.</p>";
                 } elseif ($viewData["actionResult"]["action"] == "upload" && $viewData["actionResult"]["success"] == false) {
                     "<p class=\"result-error\" id=\"result\">An error occurred while uploading the configuration.</p>";
                 }
             ?>
-            <p>
-                To add a new category, click the add button below. To remove a category, click the delete button next
-                to the category name.
-            </p>
-            <p>
-                Click the save button below to save the configuration locally. To upload the configuration and restart
-                the DNS server, click the upload button.
-            </p>
             <form action="index.php" id="form" method="post">
                 <input id="action" name="action" type="hidden" />
                 <div id="categories">
@@ -69,8 +61,8 @@
                         <span id="exceptions" tabIndex="2">Exceptions</span>
                     </div>
                     <div style="float: right;">
-                        <span id="sync" tabIndex="3">Sync</span>
-                        <span id="save" tabIndex="4">Save</span>
+                        <span id="save" tabIndex="3">Save</span>
+                        <span id="sync" tabIndex="4">Sync</span>
                         <span id="upload" tabIndex="5">Upload</span>
                     </div>
                 </div>

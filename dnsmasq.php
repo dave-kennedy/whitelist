@@ -91,14 +91,6 @@
         return array("categories" => $categories, "exceptions" => $exceptions);
     }
     
-    function syncConfig() {
-        global $settings;
-        
-        $fileContents = file_get_contents($settings["remoteConfigUrl"]);
-        
-        file_put_contents($settings["configPath"], $fileContents);
-    }
-    
     function saveConfig() {
         global $settings;
         
@@ -182,6 +174,14 @@
         file_put_contents($settings["configPath"], $fileContents);
     }
     
+    function syncConfig() {
+        global $settings;
+        
+        $fileContents = file_get_contents($settings["remoteConfigUrl"]);
+        
+        file_put_contents($settings["configPath"], $fileContents);
+    }
+    
     function getCygPath($winPath) {
         $cygPath = preg_replace("/\\\\/", "/", $winPath);
         $cygPath = preg_replace("/^([a-z]):/i", "/cygdrive/$1", $cygPath);
@@ -210,20 +210,20 @@
         $result["actionResult"]["action"] = "";
         $result["actionResult"]["success"] = false;
         
-        if (isset($_POST["action"]) && $_POST["action"] == "sync") {
+        if (isset($_POST["action"]) && $_POST["action"] == "save") {
+            saveConfig();
+            
+            $result["actionResult"]["action"] = "save";
+            $result["actionResult"]["success"] = true;
+            
+        } elseif (isset($_POST["action"]) && $_POST["action"] == "sync") {
             syncConfig();
             
             $result["actionResult"]["action"] = "sync";
             $result["actionResult"]["success"] = true;
             
-        } elseif (isset($_POST["action"]) && $_POST["action"] == "save") {
-            saveConfig();
-            
-            $result["actionResult"]["action"] = "sync";
-            $result["actionResult"]["success"] = true;
-            
         } elseif (isset($_POST["action"]) && $_POST["action"] == "upload") {
-            $result["actionResult"]["action"] = "sync";
+            $result["actionResult"]["action"] = "upload";
             
             if (uploadConfig() == 0) {
                 $result["actionResult"]["success"] = true;
