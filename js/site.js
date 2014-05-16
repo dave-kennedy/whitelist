@@ -1,7 +1,7 @@
 $(function () {
     var categories = $('#categories').vertabs({
             'add': function (event, ui) {
-                var newButton = $('<span class="remove-category">Delete</span>').button(),
+                var newButton = $('<span class="delete-category">Delete</span>').button(),
                     newTitle = $('<p><input class="category-title" name="' + ui.newPanel.attr('id') + '[title]" type="text" value="' + ui.newTab.text() + '" /></p>'),
                     newContents = $('<p><textarea class="category-contents" name="' + ui.newPanel.attr('id') + '[contents]"></textarea></p>');
                 
@@ -13,14 +13,14 @@ $(function () {
             },
             'prefix': 'category-'
         }),
-        addModal = $('#add-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'New Category' }),
-        exceptionsModal = $('#exceptions-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Exceptions' }),
-        syncModal = $('#sync-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Sync' }),
-        uploadModal = $('#upload-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Upload' }),
+        addCategoryModal = $('#add-category-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Add Category' }),
+        syncConfigModal = $('#sync-config-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Sync' }),
+        uploadConfigModal = $('#upload-config-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Upload' }),
+        viewExceptionsModal = $('#view-exceptions-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Exceptions' }),
         submitted = false;
     
     function addCategory() {
-        var title = $('#add-modal-title');
+        var title = $('#add-category-modal-title');
         
         if (title.val() === '') {
             title.css({
@@ -34,7 +34,7 @@ $(function () {
         categories.vertabs('add', title.val());
         title.val('');
         
-        addModal.dialog('close');
+        addCategoryModal.dialog('close');
     }
     
     function saveConfig() {
@@ -44,8 +44,8 @@ $(function () {
         
         submitted = true;
         
-        $('#action').val('save');
-        $('#form').append($('#exceptions-modal-contents')).submit();
+        $('#action').val('saveConfig');
+        $('#form').append($('#view-exceptions-modal-contents')).submit();
     }
     
     function syncConfig() {
@@ -55,12 +55,12 @@ $(function () {
         
         submitted = true;
         
-        $('#action').val('sync');
+        $('#action').val('syncConfig');
         $('#form').submit();
     }
     
     function uploadConfig() {
-        var password = $('#upload-modal-password');
+        var password = $('#upload-config-modal-password');
         
         if (password.val() === '') {
             password.css({
@@ -77,14 +77,15 @@ $(function () {
         
         submitted = true;
         
-        $('#action').val('upload');
+        $('#action').val('uploadConfig');
         $('#form').append(password).submit();
     }
     
     $('body').click(function (event) {
-        var target = $(event.target);
+        var target = $(event.target),
+            index;
         
-        if (target.parent().hasClass('remove-category')) {
+        if (target.parent().hasClass('delete-category')) {
             index = target.closest('.ui-vertabs-panel').index() - 1;
             
             categories.vertabs('remove', index);
@@ -110,79 +111,79 @@ $(function () {
         }
     });
     
-    $('#add').button().on('click keypress', function (event) {
+    $('#add-category').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
-            addModal.dialog('open');
+            addCategoryModal.dialog('open');
         }
     });
     
-    $('#add-modal-cancel').button().on('click keypress', function (event) {
+    $('#add-category-modal-cancel').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
-            addModal.dialog('close');
+            addCategoryModal.dialog('close');
         }
     });
     
-    $('#add-modal-ok').button().on('click keypress', function (event) {
+    $('#add-category-modal-ok').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
             addCategory();
         }
     });
     
-    $('#exceptions').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
-            exceptionsModal.dialog('open');
-        }
-    });
-    
-    $('#exceptions-modal-ok').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
-            exceptionsModal.dialog('close');
-        }
-    });
-    
-    $('#save').button().on('click keypress', function (event) {
+    $('#save-config').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
             saveConfig();
         }
     });
     
-    $('#sync').button().on('click keypress', function (event) {
+    $('#sync-config').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
-            syncModal.dialog('open');
+            syncConfigModal.dialog('open');
         }
     });
     
-    $('#sync-modal-cancel').button().on('click keypress', function (event) {
+    $('#sync-config-modal-cancel').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
-            syncModal.dialog('close');
+            syncConfigModal.dialog('close');
         }
     });
     
-    $('#sync-modal-ok').button().on('click keypress', function (event) {
+    $('#sync-config-modal-ok').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
             syncConfig();
         }
     });
     
-    $('#upload').button().on('click keypress', function (event) {
+    $('#upload-config').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
-            uploadModal.dialog('open');
+            uploadConfigModal.dialog('open');
         }
     });
     
-    $('#upload-modal-cancel').button().on('click keypress', function (event) {
+    $('#upload-config-modal-cancel').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
-            uploadModal.dialog('close');
+            uploadConfigModal.dialog('close');
         }
     });
     
-    $('#upload-modal-ok').button().on('click keypress', function (event) {
+    $('#upload-config-modal-ok').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
             uploadConfig();
         }
     });
     
-    $('.remove-category').button();
+    $('#view-exceptions').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            viewExceptionsModal.dialog('open');
+        }
+    });
+    
+    $('#view-exceptions-modal-ok').button().on('click keypress', function (event) {
+        if (event.keyCode === undefined || event.keyCode === 13) {
+            viewExceptionsModal.dialog('close');
+        }
+    });
+    
+    $('.delete-category').button();
     
     $('#result').hide().fadeIn().delay(3000).fadeOut();
 });

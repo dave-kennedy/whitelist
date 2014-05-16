@@ -31,7 +31,6 @@ textarea {
 #controls {
     margin: 1em 0;
 }
-#controls:before,
 #controls:after {
     clear: both;
     content: "";

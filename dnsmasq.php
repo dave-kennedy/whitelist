@@ -210,20 +210,20 @@
         $result["actionResult"]["action"] = "";
         $result["actionResult"]["success"] = false;
         
-        if (isset($_POST["action"]) && $_POST["action"] == "save") {
+        if (isset($_POST["action"]) && $_POST["action"] == "saveConfig") {
             saveConfig();
             
-            $result["actionResult"]["action"] = "save";
+            $result["actionResult"]["action"] = "saveConfig";
             $result["actionResult"]["success"] = true;
             
-        } elseif (isset($_POST["action"]) && $_POST["action"] == "sync") {
+        } elseif (isset($_POST["action"]) && $_POST["action"] == "syncConfig") {
             syncConfig();
             
-            $result["actionResult"]["action"] = "sync";
+            $result["actionResult"]["action"] = "syncConfig";
             $result["actionResult"]["success"] = true;
             
-        } elseif (isset($_POST["action"]) && $_POST["action"] == "upload") {
-            $result["actionResult"]["action"] = "upload";
+        } elseif (isset($_POST["action"]) && $_POST["action"] == "uploadConfig") {
+            $result["actionResult"]["action"] = "uploadConfig";
             
             if (uploadConfig() == 0) {
                 $result["actionResult"]["success"] = true;
