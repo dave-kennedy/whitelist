@@ -10,6 +10,15 @@
         "upstreamDns" => "8.8.8.8"
     );
     
+    function makeConfig($upstreamDns) {
+        return "#[Options]\nbogus-priv\ndomain-needed\nno-resolv\n
+#[Category: Forums]\nserver=/stackauth.com/$upstreamDns\nserver=/stackexchange.com/$upstreamDns\nserver=/stackoverflow.com/$upstreamDns\n
+#[Category: Games]\nserver=/steampowered.com/$upstreamDns\nserver=/teamfortress.com/$upstreamDns #This is a comment\nserver=/valvesoftware.com/$upstreamDns\n
+#Games are awesome\nserver=/gog.com/$upstreamDns\n
+#[Category: Search Engines]\nserver=/bing.com/$upstreamDns\nserver=/duckduckgo.com/$upstreamDns\nserver=/google.com/$upstreamDns\n
+#[Exceptions]\nserver=/images.google.com/0.0.0.0\n";
+    }
+    
     function readConfig() {
         global $settings;
         
@@ -17,7 +26,11 @@
         $exceptions = [];
         $exceptionMode = false;
         
-        $fileContents = file_get_contents($settings["configPath"]);
+        $fileContents = @file_get_contents($settings["configPath"]);
+        
+        if ($fileContents === false) {
+            $fileContents = makeConfig($settings["upstreamDns"]);
+        }
         
         foreach (preg_split("/\n/", $fileContents) as $line) {
             $line = trim($line);
@@ -89,6 +102,10 @@
         ksort($categories);
         
         return array("categories" => $categories, "exceptions" => $exceptions);
+    }
+    
+    function actionResult($success, $message) {
+        return array("success" => $success, "message" => $message);
     }
     
     function saveConfig() {
@@ -171,15 +188,31 @@
             }
         }
         
-        file_put_contents($settings["configPath"], $fileContents);
+        $fileResult = @file_put_contents($settings["configPath"], $fileContents);
+        
+        if ($fileResult === false) {
+            return actionResult(false, "Could not write to configuration file at " . $settings["configPath"] . ".");
+        }
+        
+        return actionResult(true, "Save success.");
     }
     
     function syncConfig() {
         global $settings;
         
-        $fileContents = file_get_contents($settings["remoteConfigUrl"]);
+        $fileContents = @file_get_contents($settings["remoteConfigUrl"]);
         
-        file_put_contents($settings["configPath"], $fileContents);
+        if ($fileContents === false) {
+            return actionResult(false, "Could not read remote configuration file at " . $settings["remoteConfigUrl"] . ".");
+        }
+        
+        $fileResult = @file_put_contents($settings["configPath"], $fileContents);
+        
+        if ($fileResult === false) {
+            return actionResult(false, "Could not write to configuration file at " . $settings["configPath"] . ".");
+        }
+        
+        return actionResult(true, "Sync success.");
     }
     
     function getCygPath($winPath) {
@@ -192,46 +225,68 @@
     function uploadConfig() {
         global $settings;
         
+        if (!file_exists($settings["expectPath"])) {
+            return actionResult(false, "expect executable not found at " . $settings["expectPath"] . ".");
+        }
+        
+        if (!file_exists($settings["scriptPath"])) {
+            return actionResult(false, "Upload script not found at " . $settings["scriptPath"] . ".");
+        }
+        
+        if (!file_exists($settings["configPath"])) {
+            return actionResult(false, "Configuration file not found at " . $settings["configPath"] . ".");
+        }
+        
         $scriptPath = getCygPath($settings["scriptPath"]);
         $configPath = getCygPath($settings["configPath"]);
         
-        $tempFile = tempnam($settings["tmpDir"], "php");
+        $tempFile = @tempnam($settings["tmpDir"], "php");
         
-        file_put_contents($tempFile, $_POST["password"]);
+        if ($tempFile === false) {
+            return actionResult(false, "Could not create temp file in " . $settings["tmpDir"] . ".");
+        }
+        
+        $fileResult = @file_put_contents($tempFile, $_POST["password"]);
+        
+        if ($fileResult === false) {
+            return actionResult(false, "Could not write to temp file at $tempFile.");
+        }
         
         $command = $settings["expectPath"] . " -f $scriptPath $configPath $tempFile";
         
         exec($command, $output, $exitCode);
         
-        return $exitCode;
-    }
-    
-    function getActionResult() {
-        $result["actionResult"]["action"] = "";
-        $result["actionResult"]["success"] = false;
-        
-        if (isset($_POST["action"]) && $_POST["action"] == "saveConfig") {
-            saveConfig();
-            
-            $result["actionResult"]["action"] = "saveConfig";
-            $result["actionResult"]["success"] = true;
-            
-        } elseif (isset($_POST["action"]) && $_POST["action"] == "syncConfig") {
-            syncConfig();
-            
-            $result["actionResult"]["action"] = "syncConfig";
-            $result["actionResult"]["success"] = true;
-            
-        } elseif (isset($_POST["action"]) && $_POST["action"] == "uploadConfig") {
-            $result["actionResult"]["action"] = "uploadConfig";
-            
-            if (uploadConfig() == 0) {
-                $result["actionResult"]["success"] = true;
-            }
+        if ($exitCode == 1) {
+            return actionResult(false, "Invalid password.");
         }
         
-        return $result;
+        // I'm not sure what other exit codes are possible here
+        if ($exitCode != 0) {
+            return actionResult(false, "Upload script returned an unknown exit code ($exitCode).");
+        }
+        
+        return actionResult(true, "Upload success!");
     }
     
-    $viewData = array_merge(getActionResult(), readConfig());
+    function doAction($action) {
+        if ($action == "saveConfig") {
+            return saveConfig();
+        }
+        
+        if ($action == "syncConfig") {
+            return syncConfig();
+        }
+        
+        if ($action == "uploadConfig") {
+            return uploadConfig();
+        }
+        
+        return actionResult(false, "Unsupported action requested: $action.");
+    }
+    
+    if (isset($_POST["action"])) {
+        $actionResult = doAction($_POST["action"]);
+    }
+    
+    $viewData = readConfig();
 ?>

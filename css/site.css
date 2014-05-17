@@ -36,18 +36,29 @@ textarea {
     content: "";
     display: block;
 }
-#result {
-    border: 1px solid;
-    border-radius: 2px;
-    padding: 0.5em;
+#action-result {
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    z-index: 1;
 }
-.result-success {
-    background-color: #efe;
+#action-result p {
+    padding: 0 1em;
+}
+#action-result-dismiss {
+    cursor: pointer;
+}
+.success {
+    background-color: rgba(255, 238, 238, 0.95);
     color: #090;
 }
-.result-error {
-    background-color: #fee;
+.error {
+    background-color: rgba(255, 238, 238, 0.95);
     color: #c00;
+}
+.small {
+    font-size: 0.75em;
 }
 .category-title {
     margin-right: 7px;

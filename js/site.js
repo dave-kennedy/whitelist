@@ -13,6 +13,7 @@ $(function () {
             },
             'prefix': 'category-'
         }),
+        actionResult = $('#action-result'),
         addCategoryModal = $('#add-category-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Add Category' }),
         syncConfigModal = $('#sync-config-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Sync' }),
         uploadConfigModal = $('#upload-config-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Upload' }),
@@ -185,5 +186,9 @@ $(function () {
     
     $('.delete-category').button();
     
-    $('#result').hide().fadeIn().delay(3000).fadeOut();
+    actionResult.hide().show('blind');
+    
+    $('#action-result-dismiss').click(function () {
+        actionResult.hide('blind');
+    });
 });

@@ -8,6 +8,16 @@
         <link href="css/site.css" rel="stylesheet" />
     </head>
     <body>
+        <?php
+            if (isset($actionResult)) {
+                echo "<div class=\"" . ($actionResult["success"] ? "success" : "error") . "\" id=\"action-result\">
+                          <p>" . $actionResult["message"] . "</p>
+                          <p class=\"small\">
+                              <a id=\"action-result-dismiss\">Click to close this message</a>.
+                          </p>
+                      </div>";
+            }
+        ?>
         <div id="container">
             <div class="ui-corner-bottom ui-state-default" id="header">
                 <h2>
@@ -16,17 +26,6 @@
                     </a>
                 </h2>
             </div>
-            <?php
-                if ($viewData["actionResult"]["action"] == "saveConfig" && $viewData["actionResult"]["success"] == true) {
-                    echo "<p class=\"result-success\" id=\"result\">Configuration saved.</p>";
-                } elseif ($viewData["actionResult"]["action"] == "syncConfig" && $viewData["actionResult"]["success"] == true) {
-                    echo "<p class=\"result-success\" id=\"result\">Configuration synced.</p>";
-                } elseif ($viewData["actionResult"]["action"] == "uploadConfig" && $viewData["actionResult"]["success"] == true) {
-                    "<p class=\"result-success\" id=\"result\">Configuration uploaded.</p>";
-                } elseif ($viewData["actionResult"]["action"] == "uploadConfig" && $viewData["actionResult"]["success"] == false) {
-                    "<p class=\"result-error\" id=\"result\">An error occurred while uploading the configuration.</p>";
-                }
-            ?>
             <form action="index.php" id="form" method="post">
                 <input id="action" name="action" type="hidden" />
                 <div id="controls">
