@@ -7,7 +7,7 @@
         "tmpDir" => "/tmp",
         "domainRegEx" => "[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*(?:\.[A-Za-z]{2,})",
         "ipRegEx" => "\d\.\d\.\d\.\d",
-        "nameServer" => "8.8.8.8"
+        "upstreamDns" => "8.8.8.8"
     );
     
     function readConfig() {
@@ -137,7 +137,7 @@
                     if ($exceptionMode) {
                         $fileContents .= "server=/$domain/0.0.0.0\n";
                     } else {
-                        $fileContents .= "server=/$domain/" . $settings["nameServer"] . "\n";
+                        $fileContents .= "server=/$domain/" . $settings["upstreamDns"] . "\n";
                     }
                     
                     unset($matches);
@@ -152,7 +152,7 @@
                     if ($exceptionMode) {
                         $fileContents .= "server=/$domain/0.0.0.0 $comment\n";
                     } else {
-                        $fileContents .= "server=/$domain/" . $settings["nameServer"] . " $comment\n";
+                        $fileContents .= "server=/$domain/" . $settings["upstreamDns"] . " $comment\n";
                     }
                     
                     unset($matches);
