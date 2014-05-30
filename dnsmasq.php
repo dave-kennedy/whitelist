@@ -15,16 +15,13 @@
 #[Category: Forums]\nserver=/stackauth.com/$upstreamDns\nserver=/stackexchange.com/$upstreamDns\nserver=/stackoverflow.com/$upstreamDns\n
 #[Category: Games]\nserver=/steampowered.com/$upstreamDns\nserver=/teamfortress.com/$upstreamDns #This is a comment\nserver=/valvesoftware.com/$upstreamDns\n
 #Games are awesome\nserver=/gog.com/$upstreamDns\n
-#[Category: Search Engines]\nserver=/bing.com/$upstreamDns\nserver=/duckduckgo.com/$upstreamDns\nserver=/google.com/$upstreamDns\n
-#[Exceptions]\nserver=/images.google.com/0.0.0.0\n";
+#[Category: Search Engines]\nserver=/bing.com/$upstreamDns\nserver=/duckduckgo.com/$upstreamDns\nserver=/google.com/$upstreamDns\n";
     }
     
     function readConfig() {
         global $settings;
         
         $categories = [];
-        $exceptions = [];
-        $exceptionMode = false;
         
         $fileContents = @file_get_contents($settings["configPath"]);
         
@@ -37,15 +34,9 @@
             
             // e.g. "#[Category: Programming]"
             if (preg_match("/^#\[Category: (.*)\]$/", $line, $matches)) {
-                $exceptionMode = false;
                 $title = $matches[1];
                 
                 unset($matches);
-                continue;
-            }
-            
-            if ($line == "#[Exceptions]") {
-                $exceptionMode = true;
                 continue;
             }
             
@@ -59,11 +50,7 @@
             if (preg_match("/^server=\/(" . $settings["domainRegEx"] . ")\/" . $settings["ipRegEx"] . "$/", $line, $matches)) {
                 $domain = $matches[1];
                 
-                if ($exceptionMode) {
-                    $exceptions[] = "$domain\n";
-                } else {
-                    $categories[$title][] = "$domain\n";
-                }
+                $categories[$title][] = "$domain\n";
                 
                 unset($matches);
                 continue;
@@ -74,11 +61,7 @@
                 $domain = $matches[1];
                 $comment = $matches[2];
                 
-                if ($exceptionMode) {
-                    $exceptions[] = "$domain $comment\n";
-                } else {
-                    $categories[$title][] = "$domain $comment\n";
-                }
+                $categories[$title][] = "$domain $comment\n";
                 
                 unset($matches);
                 continue;
@@ -88,11 +71,7 @@
             if (preg_match("/^(#.*)$/", $line, $matches)) {
                 $comment = $matches[1];
                 
-                if ($exceptionMode) {
-                    $exceptions[] = "\n$comment\n";
-                } else {
-                    $categories[$title][] = "\n$comment\n";
-                }
+                $categories[$title][] = "\n$comment\n";
                 
                 unset($matches);
                 continue;
@@ -101,7 +80,7 @@
         
         ksort($categories);
         
-        return array("categories" => $categories, "exceptions" => $exceptions);
+        return array("categories" => $categories);
     }
     
     function actionResult($success, $message) {
@@ -111,8 +90,6 @@
     function saveConfig() {
         global $settings;
         
-        $exceptionMode = false;
-        
         $fileContents = "#[Options]\nbogus-priv\ndomain-needed\nno-resolv\n";
         
         foreach ($_POST as $key => $value) {
@@ -121,28 +98,14 @@
                 continue;
             }
             
-            if ($key == "exceptions") {
-                $exceptionMode = true;
-                
-                $contents = trim($value);
-                
-                if ($contents == "") {
-                    continue;
-                }
-                
-                $fileContents .= "\n#[Exceptions]\n";
-            } else {
-                $exceptionMode = false;
+            $title = trim($value["title"]);
+            $contents = trim($value["contents"]);
             
-                $title = trim($value["title"]);
-                $contents = trim($value["contents"]);
-                
-                if ($title == "" || $contents == "") {
-                    continue;
-                }
-                
-                $fileContents .= "\n#[Category: $title]\n";
+            if ($title == "" || $contents == "") {
+                continue;
             }
+            
+            $fileContents .= "\n#[Category: $title]\n";
             
             foreach (preg_split("/\n/", $contents) as $line) {
                 $line = trim($line);
@@ -151,11 +114,7 @@
                 if (preg_match("/^(" . $settings["domainRegEx"] . ")$/", $line, $matches)) {
                     $domain = $matches[1];
                     
-                    if ($exceptionMode) {
-                        $fileContents .= "server=/$domain/0.0.0.0\n";
-                    } else {
-                        $fileContents .= "server=/$domain/" . $settings["upstreamDns"] . "\n";
-                    }
+                    $fileContents .= "server=/$domain/" . $settings["upstreamDns"] . "\n";
                     
                     unset($matches);
                     continue;
@@ -166,11 +125,7 @@
                     $domain = $matches[1];
                     $comment = $matches[2];
                     
-                    if ($exceptionMode) {
-                        $fileContents .= "server=/$domain/0.0.0.0 $comment\n";
-                    } else {
-                        $fileContents .= "server=/$domain/" . $settings["upstreamDns"] . " $comment\n";
-                    }
+                    $fileContents .= "server=/$domain/" . $settings["upstreamDns"] . " $comment\n";
                     
                     unset($matches);
                     continue;

@@ -31,12 +31,11 @@
                 <div id="controls">
                     <div style="float: left;">
                         <span id="add-category" tabIndex="1">Add</span>
-                        <span id="view-exceptions" tabIndex="2">Exceptions</span>
                     </div>
                     <div style="float: right;">
-                        <span id="save-config" tabIndex="3">Save</span>
-                        <span id="sync-config" tabIndex="4">Sync</span>
-                        <span id="upload-config" tabIndex="5">Upload</span>
+                        <span id="save-config" tabIndex="2">Save</span>
+                        <span id="sync-config" tabIndex="3">Sync</span>
+                        <span id="upload-config" tabIndex="4">Upload</span>
                     </div>
                 </div>
                 <div id="categories">
@@ -75,15 +74,6 @@
             <p style="text-align: right;">
                 <span id="add-category-modal-ok">Ok</span>
                 <span id="add-category-modal-cancel">Cancel</span>
-            </p>
-        </div>
-        <div id="view-exceptions-modal">
-            <p>If you wish to deny access to part of a domain (subdomain), enter it as an exception below.</p>
-            <p>
-                <textarea id="view-exceptions-modal-contents" name="exceptions"><?php echo implode($viewData["exceptions"]); ?></textarea>
-            </p>
-            <p style="text-align: right;">
-                <span id="view-exceptions-modal-ok">Ok</span>
             </p>
         </div>
         <div id="sync-config-modal">

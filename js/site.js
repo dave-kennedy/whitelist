@@ -17,7 +17,6 @@ $(function () {
         addCategoryModal = $('#add-category-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Add Category' }),
         syncConfigModal = $('#sync-config-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Sync' }),
         uploadConfigModal = $('#upload-config-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Upload' }),
-        viewExceptionsModal = $('#view-exceptions-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Exceptions' }),
         submitted = false;
     
     function addCategory() {
@@ -46,7 +45,7 @@ $(function () {
         submitted = true;
         
         $('#action').val('saveConfig');
-        $('#form').append($('#view-exceptions-modal-contents')).submit();
+        $('#form').submit();
     }
     
     function syncConfig() {
@@ -169,18 +168,6 @@ $(function () {
     $('#upload-config-modal-ok').button().on('click keypress', function (event) {
         if (event.keyCode === undefined || event.keyCode === 13) {
             uploadConfig();
-        }
-    });
-    
-    $('#view-exceptions').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
-            viewExceptionsModal.dialog('open');
-        }
-    });
-    
-    $('#view-exceptions-modal-ok').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
-            viewExceptionsModal.dialog('close');
         }
     });
     
