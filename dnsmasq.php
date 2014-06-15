@@ -4,7 +4,7 @@
         "scriptPath" => "c:/wamp/www/dnsmasq/bin/upload.exp",
         "remoteConfigUrl" => "http://192.168.1.1/dnsmasq.conf",
         "expectPath" => "c:/cygwin64/bin/expect.exe",
-        "tmpDir" => "/tmp",
+        "tempDir" => "c:/wamp/www/dnsmasq/temp",
         "domainRegEx" => "[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*(?:\.[A-Za-z]{2,})",
         "ipRegEx" => "\d\.\d\.\d\.\d",
         "upstreamDns" => "8.8.8.8"
@@ -195,10 +195,10 @@
         $scriptPath = getCygPath($settings["scriptPath"]);
         $configPath = getCygPath($settings["configPath"]);
         
-        $tempFile = @tempnam($settings["tmpDir"], "php");
+        $tempFile = @tempnam($settings["tempDir"], "php");
         
         if ($tempFile === false) {
-            return actionResult(false, "Could not create temp file in " . $settings["tmpDir"] . ".");
+            return actionResult(false, "Could not create temp file in " . $settings["tempDir"] . ".");
         }
         
         $fileResult = @file_put_contents($tempFile, $_POST["password"]);
@@ -206,6 +206,8 @@
         if ($fileResult === false) {
             return actionResult(false, "Could not write to temp file at $tempFile.");
         }
+        
+        $tempFile = getCygPath($tempFile);
         
         $command = $settings["expectPath"] . " -f $scriptPath $configPath $tempFile";
         
