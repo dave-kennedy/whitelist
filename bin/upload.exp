@@ -5,6 +5,21 @@ set timeout 5
 set config [lindex $argv 0]
 set tempFile [lindex $argv 1]
 
+if { ! [file exists "$config"] } {
+    puts stderr "$config does not exist"
+    exit 2
+}
+
+if { ! [file exists "$tempFile"] } {
+    puts stderr "$tempFile does not exist"
+    exit 3
+}
+
+if { ! ([file exists /usr/bin/scp] && [file executable /usr/bin/scp]) } {
+    puts stderr "/usr/bin/scp does not exist or is not executable"
+    exit 4
+}
+
 set handle [open "$tempFile" r]
 set password [read $handle]
 
@@ -22,7 +37,8 @@ expect {
         exp_send "$password\r"
         expect {
             -re ".*denied.*" {
-                exit 1
+                puts stderr "error uploading file to remote server: access is denied"
+                exit 5
             }
         }
     }
@@ -39,7 +55,8 @@ expect {
         exp_send "$password\r"
         expect {
             -re ".*denied.*" {
-                exit 1
+                puts stderr "error restarting service on remote server: access is denied"
+                exit 5
             }
         }
     }

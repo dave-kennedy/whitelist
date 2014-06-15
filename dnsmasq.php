@@ -213,7 +213,19 @@
         
         exec($command, $output, $exitCode);
         
-        if ($exitCode == 1) {
+        if ($exitCode == 2) {
+            return actionResult(false, "Configuration file not found at " . $settings["configPath"] . ".");
+        }
+        
+        if ($exitCode == 3) {
+            return actionResult(false, "Upload script not found at " . $settings["configPath"] . ".");
+        }
+        
+        if ($exitCode == 4) {
+            return actionResult(false, "scp executable not found.");
+        }
+        
+        if ($exitCode == 5) {
             return actionResult(false, "Invalid password.");
         }
         
