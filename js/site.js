@@ -14,9 +14,9 @@ $(function () {
             'prefix': 'category-'
         }),
         actionResult = $('#action-result'),
-        addCategoryModal = $('#add-category-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Add Category' }),
-        syncConfigModal = $('#sync-config-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Sync' }),
-        uploadConfigModal = $('#upload-config-modal').dialog({ 'autoOpen': false, 'modal': true, 'title': 'Upload' }),
+        addCategoryModal = $('#add-category-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Add Category' }),
+        syncConfigModal = $('#sync-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Sync' }),
+        uploadConfigModal = $('#upload-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Upload' }),
         submitted = false;
     
     function addCategory() {
@@ -109,71 +109,76 @@ $(function () {
             categories.vertabs('rename', index, title);
             return;
         }
+    }).on('keypress', '.ui-dialog', function(event) {
+        if (event.which === 13) {
+            $(this).find('.ui-button:visible').eq(0).trigger('click');
+            return;
+        }
     });
     
     $('#add-category').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
             addCategoryModal.dialog('open');
         }
     });
     
     $('#add-category-modal-cancel').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
             addCategoryModal.dialog('close');
         }
     });
     
     $('#add-category-modal-ok').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
             addCategory();
         }
     });
     
     $('#save-config').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
             saveConfig();
         }
     });
     
     $('#sync-config').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
             syncConfigModal.dialog('open');
         }
     });
     
     $('#sync-config-modal-cancel').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
             syncConfigModal.dialog('close');
         }
     });
     
     $('#sync-config-modal-ok').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
             syncConfig();
         }
     });
     
     $('#upload-config').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
             uploadConfigModal.dialog('open');
         }
     });
     
     $('#upload-config-modal-cancel').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
             uploadConfigModal.dialog('close');
         }
     });
     
     $('#upload-config-modal-ok').button().on('click keypress', function (event) {
-        if (event.keyCode === undefined || event.keyCode === 13) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
             uploadConfig();
         }
     });
     
     $('.delete-category').button();
     
-    actionResult.hide().show('blind');
+    actionResult.hide().show('blind').delay(5000).hide('blind');
     
     $('#action-result-dismiss').click(function () {
         actionResult.hide('blind');

@@ -66,3 +66,6 @@ textarea {
 .category-contents {
     height: 20em;
 }
+.no-close .ui-dialog-titlebar-close {
+    display: none;
+}

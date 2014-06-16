@@ -3,6 +3,7 @@
 <html>
     <head>
         <title>dnsmasq Configuration</title>
+        <meta charset="utf-8" />
         <link href="css/flick/jquery-ui-1.10.3.min.css" rel="stylesheet" />
         <link href="css/jquery-ui-vertabs.min.css" rel="stylesheet" />
         <link href="css/site.css" rel="stylesheet" />
@@ -69,29 +70,29 @@
         <div id="add-category-modal">
             <p>Enter the name of the category you would like to add.</p>
             <p>
-                <input id="add-category-modal-title" placeholder="New category" type="text" />
+                <input id="add-category-modal-title" placeholder="New category" tabIndex="11" type="text" />
             </p>
             <p style="text-align: right;">
-                <span id="add-category-modal-ok">Ok</span>
-                <span id="add-category-modal-cancel">Cancel</span>
+                <span id="add-category-modal-ok" tabIndex="12">Ok</span>
+                <span id="add-category-modal-cancel" tabIndex="13">Cancel</span>
             </p>
         </div>
         <div id="sync-config-modal">
             <p>By syncing the configuration with the DNS server, all local changes that have not been uploaded will be lost.</p>
             <p>Would you like to continue?</p>
             <p style="text-align: right;">
-                <span id="sync-config-modal-ok">Ok</span>
-                <span id="sync-config-modal-cancel">Cancel</span>
+                <span id="sync-config-modal-ok" tabIndex="21">Ok</span>
+                <span id="sync-config-modal-cancel" tabIndex="22">Cancel</span>
             </p>
         </div>
         <div id="upload-config-modal">
             <p>You must enter the administrator password to upload the configuration to the DNS server.</p>
             <p>
-                <input id="upload-config-modal-password" placeholder="Password" type="password" />
+                <input id="upload-config-modal-password" placeholder="Password" tabIndex="31" type="password" />
             </p>
             <p style="text-align: right;">
-                <span id="upload-config-modal-ok">Ok</span>
-                <span id="upload-config-modal-cancel">Cancel</span>
+                <span id="upload-config-modal-ok" tabIndex="32">Ok</span>
+                <span id="upload-config-modal-cancel" tabIndex="33">Cancel</span>
             </p>
         </div>
         <script src="js/jquery-2.0.3.min.js"></script>
