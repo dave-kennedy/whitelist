@@ -88,7 +88,7 @@
         <div id="upload-config-modal">
             <p>You must enter the administrator password to upload the configuration to the DNS server.</p>
             <p>
-                <input id="upload-config-modal-password" placeholder="Password" tabIndex="31" type="password" />
+                <input id="upload-config-modal-password" name="password" placeholder="Password" tabIndex="31" type="password" />
             </p>
             <p style="text-align: right;">
                 <span id="upload-config-modal-ok" tabIndex="32">Ok</span>

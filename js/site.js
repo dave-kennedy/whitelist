@@ -78,7 +78,7 @@ $(function () {
         submitted = true;
         
         $('#action').val('uploadConfig');
-        $('#form').append(password).submit();
+        $('#form').append(password.clone()).submit();
     }
     
     $('body').click(function (event) {
