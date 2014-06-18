@@ -1,1 +1,2 @@
-bin/dnsmasq.conf
+# Ignore config file and backups
+bin/dnsmasq.conf*

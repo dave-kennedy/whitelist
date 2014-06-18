@@ -155,6 +155,8 @@
     function syncConfig() {
         global $settings;
         
+        copy($settings["configPath"], $settings["configPath"] . ".bak");
+        
         $fileContents = @file_get_contents($settings["remoteConfigUrl"]);
         
         if ($fileContents === false) {
