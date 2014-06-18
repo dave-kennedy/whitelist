@@ -181,6 +181,6 @@ $(function () {
     actionResult.hide().show('blind').delay(5000).hide('blind');
     
     $('#action-result-dismiss').click(function () {
-        actionResult.hide('blind');
+        actionResult.dequeue();
     });
 });
