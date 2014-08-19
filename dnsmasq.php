@@ -18,15 +18,13 @@
 #[Category: Search Engines]\nserver=/bing.com/$upstreamDns\nserver=/duckduckgo.com/$upstreamDns\nserver=/google.com/$upstreamDns\n";
     }
     
-    function readConfig() {
-        global $settings;
-        
+    function readConfig($configPath, $upstreamDns, $domainRegEx, $ipRegEx) {
         $categories = [];
         
-        $fileContents = @file_get_contents($settings["configPath"]);
+        $fileContents = @file_get_contents($configPath);
         
         if ($fileContents === false) {
-            $fileContents = makeConfig($settings["upstreamDns"]);
+            $fileContents = makeConfig($upstreamDns);
         }
         
         foreach (preg_split("/\n/", $fileContents) as $line) {
@@ -47,7 +45,7 @@
             }
             
             // e.g. "server=/stackoverflow.com/8.8.8.8"
-            if (preg_match("/^server=\/(" . $settings["domainRegEx"] . ")\/" . $settings["ipRegEx"] . "$/", $line, $matches)) {
+            if (preg_match("/^server=\/($domainRegEx)\/$ipRegEx$/", $line, $matches)) {
                 $domain = $matches[1];
                 
                 $categories[$title][] = "$domain\n";
@@ -57,7 +55,7 @@
             }
             
             // e.g. "server=/stackoverflow.com/8.8.8.8 #comment"
-            if (preg_match("/^server=\/(" . $settings["domainRegEx"] . ")\/" . $settings["ipRegEx"] . " ?(#.*)$/", $line, $matches)) {
+            if (preg_match("/^server=\/($domainRegEx)\/$ipRegEx ?(#.*)$/", $line, $matches)) {
                 $domain = $matches[1];
                 $comment = $matches[2];
                 
@@ -87,9 +85,7 @@
         return array("success" => $success, "message" => $message);
     }
     
-    function saveConfig() {
-        global $settings;
-        
+    function saveConfig($configPath, $upstreamDns, $domainRegEx) {
         $fileContents = "#[Options]\nbogus-priv\ndomain-needed\nno-resolv\n";
         
         foreach ($_POST as $key => $value) {
@@ -111,21 +107,21 @@
                 $line = trim($line);
                 
                 // e.g. "stackoverflow.com"
-                if (preg_match("/^(" . $settings["domainRegEx"] . ")$/", $line, $matches)) {
+                if (preg_match("/^($domainRegEx)$/", $line, $matches)) {
                     $domain = $matches[1];
                     
-                    $fileContents .= "server=/$domain/" . $settings["upstreamDns"] . "\n";
+                    $fileContents .= "server=/$domain/$upstreamDns\n";
                     
                     unset($matches);
                     continue;
                 }
                 
                 // e.g. "stackoverflow.com #comment"
-                if (preg_match("/^(" . $settings["domainRegEx"] . ") ?(#.*)$/", $line, $matches)) {
+                if (preg_match("/^($domainRegEx) ?(#.*)$/", $line, $matches)) {
                     $domain = $matches[1];
                     $comment = $matches[2];
                     
-                    $fileContents .= "server=/$domain/" . $settings["upstreamDns"] . " $comment\n";
+                    $fileContents .= "server=/$domain/$upstreamDns $comment\n";
                     
                     unset($matches);
                     continue;
@@ -143,30 +139,28 @@
             }
         }
         
-        $fileResult = @file_put_contents($settings["configPath"], $fileContents);
+        $fileResult = @file_put_contents($configPath, $fileContents);
         
         if ($fileResult === false) {
-            return actionResult(false, "Could not write to configuration file at " . $settings["configPath"] . ".");
+            return actionResult(false, "Could not write to configuration file at $configPath.");
         }
         
         return actionResult(true, "Save success.");
     }
     
-    function syncConfig() {
-        global $settings;
+    function syncConfig($configPath, $remoteConfigUrl) {
+        copy($configPath, "$configPath.bak");
         
-        copy($settings["configPath"], $settings["configPath"] . ".bak");
-        
-        $fileContents = @file_get_contents($settings["remoteConfigUrl"]);
+        $fileContents = @file_get_contents($remoteConfigUrl);
         
         if ($fileContents === false) {
-            return actionResult(false, "Could not read remote configuration file at " . $settings["remoteConfigUrl"] . ".");
+            return actionResult(false, "Could not read remote configuration file at $remoteConfigUrl.");
         }
         
-        $fileResult = @file_put_contents($settings["configPath"], $fileContents);
+        $fileResult = @file_put_contents($configPath, $fileContents);
         
         if ($fileResult === false) {
-            return actionResult(false, "Could not write to configuration file at " . $settings["configPath"] . ".");
+            return actionResult(false, "Could not write to configuration file at $configPath.");
         }
         
         return actionResult(true, "Sync success.");
@@ -179,28 +173,26 @@
         return strtolower($cygPath);
     }
     
-    function uploadConfig() {
-        global $settings;
-        
-        if (!file_exists($settings["expectPath"])) {
-            return actionResult(false, "expect executable not found at " . $settings["expectPath"] . ".");
+    function uploadConfig($configPath, $expectPath, $scriptPath, $tempDir) {
+        if (!file_exists($expectPath)) {
+            return actionResult(false, "expect executable not found at $expectPath.");
         }
         
-        if (!file_exists($settings["scriptPath"])) {
-            return actionResult(false, "Upload script not found at " . $settings["scriptPath"] . ".");
+        if (!file_exists($scriptPath)) {
+            return actionResult(false, "Upload script not found at $scriptPath.");
         }
         
-        if (!file_exists($settings["configPath"])) {
-            return actionResult(false, "Configuration file not found at " . $settings["configPath"] . ".");
+        if (!file_exists($configPath)) {
+            return actionResult(false, "Configuration file not found at $configPath.");
         }
         
-        $scriptPath = getCygPath($settings["scriptPath"]);
-        $configPath = getCygPath($settings["configPath"]);
+        $scriptPath = getCygPath($scriptPath);
+        $configPath = getCygPath($configPath);
         
-        $tempFile = @tempnam($settings["tempDir"], "php");
+        $tempFile = @tempnam($tempDir, "php");
         
         if ($tempFile === false) {
-            return actionResult(false, "Could not create temp file in " . $settings["tempDir"] . ".");
+            return actionResult(false, "Could not create temp file in $tempDir.");
         }
         
         $fileResult = @file_put_contents($tempFile, $_POST["password"]);
@@ -211,16 +203,16 @@
         
         $tempFile = getCygPath($tempFile);
         
-        $command = $settings["expectPath"] . " -f $scriptPath $configPath $tempFile";
+        $command = "$expectPath -f $scriptPath $configPath $tempFile";
         
         exec($command, $output, $exitCode);
         
         if ($exitCode == 2) {
-            return actionResult(false, "Configuration file not found at " . $settings["configPath"] . ".");
+            return actionResult(false, "Configuration file not found at $configPath.");
         }
         
         if ($exitCode == 3) {
-            return actionResult(false, "Upload script not found at " . $settings["configPath"] . ".");
+            return actionResult(false, "Upload script not found at $configPath.");
         }
         
         if ($exitCode == 4) {
@@ -236,28 +228,16 @@
             return actionResult(false, "Upload script returned an unknown exit code ($exitCode).");
         }
         
-        return actionResult(true, "Upload success!");
+        return actionResult(true, "Upload success.");
     }
     
-    function doAction($action) {
-        if ($action == "saveConfig") {
-            return saveConfig();
-        }
-        
-        if ($action == "syncConfig") {
-            return syncConfig();
-        }
-        
-        if ($action == "uploadConfig") {
-            return uploadConfig();
-        }
-        
-        return actionResult(false, "Unsupported action requested: $action.");
+    if (isset($_POST["action"]) && $_POST["action"] == "saveConfig") {
+        $actionResult = saveConfig($settings["configPath"], $settings["upstreamDns"], $settings["domainRegEx"]);
+    } elseif (isset($_POST["action"]) && $_POST["action"] == "syncConfig") {
+        $actionResult = syncConfig($settings["configPath"], $settings["remoteConfigUrl"]);
+    } elseif (isset($_POST["action"]) && $_POST["action"] == "uploadConfig") {
+        $actionResult = uploadConfig($settings["configPath"], $settings["expectPath"], $settings["scriptPath"], $settings["tempDir"]);
     }
     
-    if (isset($_POST["action"])) {
-        $actionResult = doAction($_POST["action"]);
-    }
-    
-    $viewData = readConfig();
+    $viewData = readConfig($settings["configPath"], $settings["upstreamDns"], $settings["domainRegEx"], $settings["ipRegEx"]);
 ?>
