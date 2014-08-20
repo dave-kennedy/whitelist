@@ -78,7 +78,7 @@
         
         ksort($categories);
         
-        return array("categories" => $categories);
+        return $categories;
     }
     
     function actionResult($success, $message) {
@@ -231,6 +231,18 @@
         return actionResult(true, "Upload success.");
     }
     
+    function compareArrays($array1, $array2) {
+        foreach ($array1 as $key => $value) {
+            if (array_key_exists($key, $array2)) {
+                $diff[$key] = array_diff($value, $array2[$key]);
+            } else {
+                $diff[$key] = $value;
+            }
+        }
+        
+        return $diff;
+    }
+    
     if (isset($_POST["action"]) && $_POST["action"] == "saveConfig") {
         $actionResult = saveConfig($settings["configPath"], $settings["upstreamDns"], $settings["domainRegEx"]);
     } elseif (isset($_POST["action"]) && $_POST["action"] == "syncConfig") {
@@ -239,5 +251,9 @@
         $actionResult = uploadConfig($settings["configPath"], $settings["expectPath"], $settings["scriptPath"], $settings["tempDir"]);
     }
     
-    $viewData = readConfig($settings["configPath"], $settings["upstreamDns"], $settings["domainRegEx"], $settings["ipRegEx"]);
+    $viewData["categories"] = readConfig($settings["configPath"], $settings["upstreamDns"], $settings["domainRegEx"], $settings["ipRegEx"]);
+    $viewData["remoteCategories"] = readConfig($settings["remoteConfigUrl"], $settings["upstreamDns"], $settings["domainRegEx"], $settings["ipRegEx"]);
+    
+    $viewData["additions"] = compareArrays($viewData["categories"], $viewData["remoteCategories"]);
+    $viewData["deletions"] = compareArrays($viewData["remoteCategories"], $viewData["categories"]);
 ?>

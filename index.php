@@ -35,8 +35,9 @@
                     </div>
                     <div style="float: right;">
                         <span id="save-config" tabIndex="2">Save</span>
-                        <span id="sync-config" tabIndex="3">Sync</span>
-                        <span id="upload-config" tabIndex="4">Upload</span>
+                        <span id="compare-config" tabIndex="3">Compare</span>
+                        <span id="sync-config" tabIndex="4">Sync</span>
+                        <span id="upload-config" tabIndex="5">Upload</span>
                     </div>
                 </div>
                 <div id="categories">
@@ -76,6 +77,30 @@
                 <span id="add-category-modal-ok" tabIndex="12">Ok</span>
                 <span id="add-category-modal-cancel" tabIndex="13">Cancel</span>
             </p>
+        </div>
+        <div id="compare-config-modal">
+            <h3>Additions</h3>
+            <?php
+                foreach ($viewData["additions"] as $title => $contents) {
+                    if (empty($contents)) {
+                        continue;
+                    }
+                    
+                    echo "<h4>$title</h4>";
+                    echo "<div class=\"add\">" . implode("</div><div class=\"add\">", $contents) . "</div>";
+                }
+            ?>
+            <h3>Deletions</h3>
+            <?php
+                foreach ($viewData["deletions"] as $title => $contents) {
+                    if (empty($contents)) {
+                        continue;
+                    }
+                    
+                    echo "<h4>$title</h4>";
+                    echo "<div class=\"delete\">" . implode("</div><div class=\"delete\">", $contents) . "</div>";
+                }
+            ?>
         </div>
         <div id="sync-config-modal">
             <p>By syncing the configuration with the DNS server, all local changes that have not been uploaded will be lost.</p>

@@ -15,6 +15,7 @@ $(function () {
         }),
         actionResult = $('#action-result'),
         addCategoryModal = $('#add-category-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Add Category' }),
+        compareConfigModal = $('#compare-config-modal').dialog({ 'autoOpen': false, 'maxHeight': 600, 'modal': true, 'title': 'Compare', 'width': 'auto' }),
         syncConfigModal = $('#sync-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Sync' }),
         uploadConfigModal = $('#upload-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Upload' }),
         submitted = false;
@@ -137,6 +138,12 @@ $(function () {
     $('#save-config').button().on('click keypress', function (event) {
         if (event.which === undefined || event.which === 1 || event.which === 13) {
             saveConfig();
+        }
+    });
+    
+    $('#compare-config').button().on('click keypress', function (event) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
+            compareConfigModal.dialog('open');
         }
     });
     
