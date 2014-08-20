@@ -19,6 +19,7 @@ $(function () {
         actionResult = $('#action-result'),
         addCategoryModal = $('#add-category-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Add Category' }),
         uploadConfigModal = $('#upload-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Upload' }),
+        changed = false,
         submitted = false;
     
     function addCategory() {
@@ -77,6 +78,8 @@ $(function () {
             $('.ui-dialog-content').dialog('close');
             return;
         }
+    }).change(function () {
+        changed = true;
     }).focusout(function (event) {
         var target = $(event.target),
             index,
@@ -87,11 +90,6 @@ $(function () {
             title = target.val();
             
             categories.vertabs('rename', index, title);
-            return;
-        }
-    }).on('keypress', '.ui-dialog', function(event) {
-        if (event.which === 13) {
-            $(this).find('.ui-button:visible').eq(0).trigger('click');
             return;
         }
     });
@@ -139,4 +137,17 @@ $(function () {
     $('#action-result-dismiss').click(function () {
         actionResult.dequeue();
     });
+    
+    $('.ui-dialog').keypress(function (event) {
+        if (event.which === 13) {
+            $(this).find('.ui-button:visible').eq(0).trigger('click');
+            return;
+        }
+    });
+    
+    window.onbeforeunload = function () {
+        if (changed && !submitted || $('#action-result').hasClass('error') && !submitted) {
+            return 'Are you sure you want to navigate away?';
+        }
+    };
 });
