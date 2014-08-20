@@ -2,31 +2,42 @@
 
 set timeout 5
 
-set config [lindex $argv 0]
-set tempFile [lindex $argv 1]
+set dnsServer [lindex $argv 0]
+set dnsService [lindex $argv 1]
+set scpPath [lindex $argv 2]
+set sshPath [lindex $argv 3]
+set sshUser [lindex $argv 4]
+set tempConfigPath [lindex $argv 5]
+set tempPasswordPath [lindex $argv 6]
+set uploadPath [lindex $argv 7]
 
-if { ! [file exists "$config"] } {
-    puts stderr "$config does not exist"
+if { ! ([file exists "$scpPath"] && [file executable "$scpPath"]) } {
+    puts stderr "$scpPath does not exist or is not executable"
     exit 2
 }
 
-if { ! [file exists "$tempFile"] } {
-    puts stderr "$tempFile does not exist"
+if { ! ([file exists "$sshPath"] && [file executable "$sshPath"]) } {
+    puts stderr "$sshPath does not exist or is not executable"
     exit 3
 }
 
-if { ! ([file exists /usr/bin/scp] && [file executable /usr/bin/scp]) } {
-    puts stderr "/usr/bin/scp does not exist or is not executable"
+if { ! ([file exists "$tempConfigPath"] && [file readable "$tempConfigPath"]) } {
+    puts stderr "$tempConfigPath does not exist or is not readable"
     exit 4
 }
 
-set handle [open "$tempFile" r]
-set password [read $handle]
+if { ! ([file exists "$tempPasswordPath"] && [file readable "$tempPasswordPath"]) } {
+    puts stderr "$tempPasswordPath does not exist or is not readable"
+    exit 5
+}
+
+set handle [open "$tempPasswordPath" r]
+set sshPassword [read $handle]
 
 close $handle
-file delete $tempFile
+file delete $tempPasswordPath
 
-spawn /usr/bin/scp "$config" root@192.168.1.1:/etc/dnsmasq.conf
+spawn "$scpPath" "$tempConfigPath" "$sshUser@$dnsServer:$uploadPath"
 
 expect {
     -re ".*yes.*no.*" {
@@ -34,17 +45,17 @@ expect {
         exp_continue
     }
     -re ".*password.*" {
-        exp_send "$password\r"
+        exp_send "$sshPassword\r"
         expect {
             -re ".*denied.*" {
                 puts stderr "error uploading file to remote server: access is denied"
-                exit 5
+                exit 6
             }
         }
     }
 }
 
-spawn /usr/bin/ssh root@192.168.1.1 "/etc/init.d/dnsmasq restart"
+spawn "$sshPath" "$sshUser@$dnsServer" "$dnsService restart"
 
 expect {
     -re ".*yes.*no.*" {
@@ -52,11 +63,11 @@ expect {
         exp_continue
     }
     -re ".*password.*" {
-        exp_send "$password\r"
+        exp_send "$sshPassword\r"
         expect {
             -re ".*denied.*" {
                 puts stderr "error restarting service on remote server: access is denied"
-                exit 5
+                exit 6
             }
         }
     }

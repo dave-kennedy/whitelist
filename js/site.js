@@ -15,10 +15,7 @@ $(function () {
         }),
         actionResult = $('#action-result'),
         addCategoryModal = $('#add-category-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Add Category' }),
-        syncCompareModal = $('#sync-compare-modal').dialog({ 'autoOpen': false, 'maxHeight': 600, 'minWidth': 400, 'modal': true, 'title': 'Sync Compare' }),
-        uploadCompareModal = $('#upload-compare-modal').dialog({ 'autoOpen': false, 'maxHeight': 600, 'minWidth': 400, 'modal': true, 'title': 'Upload Compare' }),
-        syncConfigModal = $('#sync-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'minWidth': 400, 'modal': true, 'title': 'Sync' }),
-        uploadConfigModal = $('#upload-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'minWidth': 400, 'modal': true, 'title': 'Upload' }),
+        uploadConfigModal = $('#upload-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Upload' }),
         submitted = false;
     
     function addCategory() {
@@ -37,28 +34,6 @@ $(function () {
         title.val('');
         
         addCategoryModal.dialog('close');
-    }
-    
-    function saveConfig() {
-        if (submitted) {
-            return;
-        }
-        
-        submitted = true;
-        
-        $('#action').val('saveConfig');
-        $('#form').submit();
-    }
-    
-    function syncConfig() {
-        if (submitted) {
-            return;
-        }
-        
-        submitted = true;
-        
-        $('#action').val('syncConfig');
-        $('#form').submit();
     }
     
     function uploadConfig() {
@@ -133,42 +108,6 @@ $(function () {
     $('#add-category-modal-ok').button().on('click keypress', function (event) {
         if (event.which === undefined || event.which === 1 || event.which === 13) {
             addCategory();
-        }
-    });
-    
-    $('#save-config').button().on('click keypress', function (event) {
-        if (event.which === undefined || event.which === 1 || event.which === 13) {
-            saveConfig();
-        }
-    });
-    
-    $('#sync-compare').button().on('click keypress', function (event) {
-        if (event.which === undefined || event.which === 1 || event.which === 13) {
-            syncCompareModal.dialog('open');
-        }
-    });
-    
-    $('#upload-compare').button().on('click keypress', function (event) {
-        if (event.which === undefined || event.which === 1 || event.which === 13) {
-            uploadCompareModal.dialog('open');
-        }
-    });
-    
-    $('#sync-config').button().on('click keypress', function (event) {
-        if (event.which === undefined || event.which === 1 || event.which === 13) {
-            syncConfigModal.dialog('open');
-        }
-    });
-    
-    $('#sync-config-modal-cancel').button().on('click keypress', function (event) {
-        if (event.which === undefined || event.which === 1 || event.which === 13) {
-            syncConfigModal.dialog('close');
-        }
-    });
-    
-    $('#sync-config-modal-ok').button().on('click keypress', function (event) {
-        if (event.which === undefined || event.which === 1 || event.which === 13) {
-            syncConfig();
         }
     });
     
