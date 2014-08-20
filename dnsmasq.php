@@ -175,14 +175,9 @@
         
         $fileContents = "#[Options]\nbogus-priv\ndomain-needed\nno-resolv\n";
         
-        foreach ($_POST as $key => $value) {
-            // Don't write the values of the action and password fields to the config file
-            if ($key == "action" || $key == "password" || $value == "") {
-                continue;
-            }
-            
-            $title = trim($value["title"]);
-            $contents = trim($value["contents"]);
+        foreach ($_POST["categories"] as $title => $contents) {
+            $title = trim($title);
+            $contents = trim($contents);
             
             if ($title == "" || $contents == "") {
                 continue;
