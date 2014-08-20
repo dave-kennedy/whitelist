@@ -68,6 +68,8 @@
             if (preg_match("/^#\[Category: (.*)\]$/", $line, $matches)) {
                 $title = $matches[1];
                 
+                $categories[$title] = "";
+                
                 unset($matches);
                 continue;
             }
@@ -82,7 +84,7 @@
             if (preg_match("/^server=\/($domainRegEx)\/\d\.\d\.\d\.\d$/", $line, $matches)) {
                 $domain = $matches[1];
                 
-                $categories[$title][] = "$domain\n";
+                $categories[$title] .= "$domain\n";
                 
                 unset($matches);
                 continue;
@@ -93,7 +95,7 @@
                 $domain = $matches[1];
                 $comment = $matches[2];
                 
-                $categories[$title][] = "$domain $comment\n";
+                $categories[$title] .= "$domain $comment\n";
                 
                 unset($matches);
                 continue;
@@ -103,7 +105,7 @@
             if (preg_match("/^(#.*)$/", $line, $matches)) {
                 $comment = $matches[1];
                 
-                $categories[$title][] = "\n$comment\n";
+                $categories[$title] .= "\n$comment\n";
                 
                 unset($matches);
                 continue;
@@ -237,5 +239,9 @@
                                      $settings["upstreamDns"]);
     }
     
-    $viewData["categories"] = readConfig($settings["downloadUrl"], $settings["upstreamDns"]);
+    if (isset($_POST["categories"])) {
+        $viewData["categories"] = $_POST["categories"];
+    } else {
+        $viewData["categories"] = readConfig($settings["downloadUrl"], $settings["upstreamDns"]);
+    }
 ?>

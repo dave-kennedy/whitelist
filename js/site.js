@@ -1,15 +1,18 @@
 $(function () {
     var categories = $('#categories').vertabs({
             'add': function (event, ui) {
-                var newButton = $('<span class="delete-category">Delete</span>').button(),
-                    newTitle = $('<p><input class="category-title" name="' + ui.newPanel.attr('id') + '[title]" type="text" value="' + ui.newTab.text() + '" /></p>'),
-                    newContents = $('<p><textarea class="category-contents" name="' + ui.newPanel.attr('id') + '[contents]"></textarea></p>');
+                var newTitle = $('<p><input class="category-title" type="text" value="' + ui.newTab.text() + '" /></p>'),
+                    newButton = $('<span class="delete-category">Delete</span>').button(),
+                    newContents = $('<p><textarea class="category-contents" name="categories[' + ui.newTab.text() + ']"></textarea></p>');
                 
                 ui.newPanel.append(newTitle.append(newButton)).append(newContents);
                 
                 $(this).vertabs('option', 'active', ui.newTab.index());
                 
                 newContents.find('textarea').focus();
+            },
+            'rename': function (event, ui) {
+                ui.panel.find('textarea').attr('name', 'categories[' + ui.tab.text() + ']');
             },
             'prefix': 'category-'
         }),

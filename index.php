@@ -52,11 +52,11 @@
                         foreach ($viewData["categories"] as $title => $contents) {
                             echo "<div id=\"category-$i\">
                                       <p>
-                                          <input class=\"category-title\" name=\"categories[$i]" . "[title]\" type=\"text\" value=\"$title\" />
+                                          <input class=\"category-title\" type=\"text\" value=\"$title\" />
                                           <span class=\"delete-category\">Delete</span>
                                       </p>
                                       <p>
-                                          <textarea class=\"category-contents\" name=\"categories[$i]" . "[contents]\">" . implode($contents) . "</textarea>
+                                          <textarea class=\"category-contents\" name=\"categories[$title]\">$contents</textarea>
                                       </p>
                                   </div>";
                             $i++;
