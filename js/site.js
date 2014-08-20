@@ -15,9 +15,10 @@ $(function () {
         }),
         actionResult = $('#action-result'),
         addCategoryModal = $('#add-category-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Add Category' }),
-        compareConfigModal = $('#compare-config-modal').dialog({ 'autoOpen': false, 'maxHeight': 600, 'modal': true, 'title': 'Compare', 'width': 'auto' }),
-        syncConfigModal = $('#sync-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Sync' }),
-        uploadConfigModal = $('#upload-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'modal': true, 'title': 'Upload' }),
+        syncCompareModal = $('#sync-compare-modal').dialog({ 'autoOpen': false, 'maxHeight': 600, 'minWidth': 400, 'modal': true, 'title': 'Sync Compare' }),
+        uploadCompareModal = $('#upload-compare-modal').dialog({ 'autoOpen': false, 'maxHeight': 600, 'minWidth': 400, 'modal': true, 'title': 'Upload Compare' }),
+        syncConfigModal = $('#sync-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'minWidth': 400, 'modal': true, 'title': 'Sync' }),
+        uploadConfigModal = $('#upload-config-modal').dialog({ 'autoOpen': false, 'dialogClass': 'no-close', 'minWidth': 400, 'modal': true, 'title': 'Upload' }),
         submitted = false;
     
     function addCategory() {
@@ -141,9 +142,15 @@ $(function () {
         }
     });
     
-    $('#compare-config').button().on('click keypress', function (event) {
+    $('#sync-compare').button().on('click keypress', function (event) {
         if (event.which === undefined || event.which === 1 || event.which === 13) {
-            compareConfigModal.dialog('open');
+            syncCompareModal.dialog('open');
+        }
+    });
+    
+    $('#upload-compare').button().on('click keypress', function (event) {
+        if (event.which === undefined || event.which === 1 || event.which === 13) {
+            uploadCompareModal.dialog('open');
         }
     });
     

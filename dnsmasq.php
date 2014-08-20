@@ -254,6 +254,6 @@
     $viewData["categories"] = readConfig($settings["configPath"], $settings["upstreamDns"], $settings["domainRegEx"], $settings["ipRegEx"]);
     $viewData["remoteCategories"] = readConfig($settings["remoteConfigUrl"], $settings["upstreamDns"], $settings["domainRegEx"], $settings["ipRegEx"]);
     
-    $viewData["additions"] = compareArrays($viewData["categories"], $viewData["remoteCategories"]);
-    $viewData["deletions"] = compareArrays($viewData["remoteCategories"], $viewData["categories"]);
+    $viewData["localOnly"] = compareArrays($viewData["categories"], $viewData["remoteCategories"]);
+    $viewData["remoteOnly"] = compareArrays($viewData["remoteCategories"], $viewData["categories"]);
 ?>

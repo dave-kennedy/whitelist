@@ -13,7 +13,7 @@
             if (isset($actionResult)) {
                 echo "<div class=\"" . ($actionResult["success"] ? "success" : "error") . "\" id=\"action-result\">
                           <p>" . $actionResult["message"] . "</p>
-                          <p class=\"small\">
+                          <p>
                               <a id=\"action-result-dismiss\">Click to close this message</a>.
                           </p>
                       </div>";
@@ -29,15 +29,14 @@
             </div>
             <form action="index.php" id="form" method="post">
                 <input id="action" name="action" type="hidden" />
-                <div id="controls">
+                <div class="controls">
                     <div style="float: left;">
                         <span id="add-category" tabIndex="1">Add</span>
                     </div>
                     <div style="float: right;">
                         <span id="save-config" tabIndex="2">Save</span>
-                        <span id="compare-config" tabIndex="3">Compare</span>
-                        <span id="sync-config" tabIndex="4">Sync</span>
-                        <span id="upload-config" tabIndex="5">Upload</span>
+                        <span id="sync-config" tabIndex="3">Sync</span>
+                        <span id="upload-config" tabIndex="4">Upload</span>
                     </div>
                 </div>
                 <div id="categories">
@@ -78,10 +77,39 @@
                 <span id="add-category-modal-cancel" tabIndex="13">Cancel</span>
             </p>
         </div>
-        <div id="compare-config-modal">
+        <div id="sync-config-modal">
+            <p>By syncing the configuration with the DNS server, all local changes that have not been uploaded will be lost.</p>
+            <p>Would you like to continue?</p>
+            <div class="controls">
+                <div style="float: left;">
+                    <span id="sync-compare" tabIndex="21">Compare</span>
+                </div>
+                <div style="float: right;">
+                    <span id="sync-config-modal-ok" tabIndex="22">Ok</span>
+                    <span id="sync-config-modal-cancel" tabIndex="23">Cancel</span>
+                </div>
+            </div>
+        </div>
+        <div id="upload-config-modal">
+            <p>You must enter the administrator password to upload the configuration to the DNS server.</p>
+            <p>
+                <input id="upload-config-modal-password" name="password" placeholder="Password" tabIndex="31" type="password" />
+            </p>
+            <div class="controls">
+                <div style="float: left;">
+                    <span id="upload-compare" tabIndex="33">Compare</span>
+                </div>
+                <div style="float: right;">
+                    <span id="upload-config-modal-ok" tabIndex="34">Ok</span>
+                    <span id="upload-config-modal-cancel" tabIndex="35">Cancel</span>
+                </div>
+            </div>
+        </div>
+        <div id="sync-compare-modal">
+            <p>By syncing the configuration with the DNS server, the following changes will be made to the local configuration file:</p>
             <h3>Additions</h3>
             <?php
-                foreach ($viewData["additions"] as $title => $contents) {
+                foreach ($viewData["remoteOnly"] as $title => $contents) {
                     if (empty($contents)) {
                         continue;
                     }
@@ -92,7 +120,7 @@
             ?>
             <h3>Deletions</h3>
             <?php
-                foreach ($viewData["deletions"] as $title => $contents) {
+                foreach ($viewData["localOnly"] as $title => $contents) {
                     if (empty($contents)) {
                         continue;
                     }
@@ -102,23 +130,30 @@
                 }
             ?>
         </div>
-        <div id="sync-config-modal">
-            <p>By syncing the configuration with the DNS server, all local changes that have not been uploaded will be lost.</p>
-            <p>Would you like to continue?</p>
-            <p style="text-align: right;">
-                <span id="sync-config-modal-ok" tabIndex="21">Ok</span>
-                <span id="sync-config-modal-cancel" tabIndex="22">Cancel</span>
-            </p>
-        </div>
-        <div id="upload-config-modal">
-            <p>You must enter the administrator password to upload the configuration to the DNS server.</p>
-            <p>
-                <input id="upload-config-modal-password" name="password" placeholder="Password" tabIndex="31" type="password" />
-            </p>
-            <p style="text-align: right;">
-                <span id="upload-config-modal-ok" tabIndex="32">Ok</span>
-                <span id="upload-config-modal-cancel" tabIndex="33">Cancel</span>
-            </p>
+        <div id="upload-compare-modal">
+            <p>By uploading the configuration to the DNS server, the following changes will be made to the remote configuration file:</p>
+            <h3>Additions</h3>
+            <?php
+                foreach ($viewData["localOnly"] as $title => $contents) {
+                    if (empty($contents)) {
+                        continue;
+                    }
+                    
+                    echo "<h4>$title</h4>";
+                    echo "<div class=\"add\">" . implode("</div><div class=\"add\">", $contents) . "</div>";
+                }
+            ?>
+            <h3>Deletions</h3>
+            <?php
+                foreach ($viewData["remoteOnly"] as $title => $contents) {
+                    if (empty($contents)) {
+                        continue;
+                    }
+                    
+                    echo "<h4>$title</h4>";
+                    echo "<div class=\"delete\">" . implode("</div><div class=\"delete\">", $contents) . "</div>";
+                }
+            ?>
         </div>
         <script src="js/jquery-2.0.3.min.js"></script>
         <script src="js/jquery-ui-1.10.3.min.js"></script>

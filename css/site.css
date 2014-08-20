@@ -26,14 +26,6 @@ textarea {
 #header img {
     vertical-align: top;
 }
-#controls {
-    margin: 1em 0;
-}
-#controls:after {
-    clear: both;
-    content: "";
-    display: block;
-}
 #action-result {
     box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
@@ -46,11 +38,7 @@ textarea {
 }
 #action-result-dismiss {
     cursor: pointer;
-}
-#compare-config-modal h3,
-#compare-config-modal h4 {
-    margin-bottom: 0.5em;
-    margin-top: 1em;
+    font-size: 0.75em;
 }
 .add,
 .success {
@@ -62,9 +50,6 @@ textarea {
     background-color: rgba(255, 238, 238, 0.95);
     color: #c00;
 }
-.small {
-    font-size: 0.75em;
-}
 .category-title {
     margin-right: 7px;
 }
@@ -72,6 +57,19 @@ textarea {
     height: 20em;
     width: 100%;
 }
+.controls {
+    margin: 1em 0;
+}
+.controls:after {
+    clear: both;
+    content: "";
+    display: block;
+}
 .no-close .ui-dialog-titlebar-close {
     display: none;
+}
+.ui-dialog-content h3,
+.ui-dialog-content h4 {
+    margin-bottom: 0.5em;
+    margin-top: 1em;
 }
