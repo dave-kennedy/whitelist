@@ -138,7 +138,7 @@
         
         $scriptPath = getCygPath($scriptPath);
         
-        $tempConfigPath = makeTempFile($tempDir, writeConfig($upstreamDns));
+        $tempConfigPath = makeTempFile($tempDir, writeConfig($_POST["categories"], $upstreamDns));
         
         if ($tempConfigPath === false) {
             return actionResult(false, "Could not write config to file at $tempConfigPath.");
@@ -170,12 +170,12 @@
         return actionResult(true, "Upload success.");
     }
     
-    function writeConfig($upstreamDns) {
+    function writeConfig($categories, $upstreamDns) {
         global $domainRegEx;
         
         $fileContents = "#[Options]\nbogus-priv\ndomain-needed\nno-resolv\n";
         
-        foreach ($_POST["categories"] as $title => $contents) {
+        foreach ($categories as $title => $contents) {
             $title = trim($title);
             $contents = trim($contents);
             
