@@ -1,4 +1,6 @@
 <?php
+    error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
+    
     $domainRegEx = "[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*(?:\.[A-Za-z]{2,})";
     
     $settings = array(
@@ -161,14 +163,17 @@
         exec($command, $output, $exitCode);
         
         if ($exitCode == 6) {
+            unlink($tempPasswordPath);
             return actionResult(false, "Invalid password.");
         }
         
         // I'm not sure what other exit codes are possible here
         if ($exitCode != 0) {
+            unlink($tempPasswordPath);
             return actionResult(false, "Upload script returned an unknown exit code ($exitCode).");
         }
         
+        unlink($tempPasswordPath);
         return actionResult(true, "Upload success.");
     }
     
