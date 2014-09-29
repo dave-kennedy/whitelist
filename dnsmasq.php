@@ -11,8 +11,8 @@
         "scpPath" => "c:/cygwin64/bin/scp.exe",
         "sshPath" => "c:/cygwin64/bin/ssh.exe",
         "sshUser" => "root",
-        "scriptPath" => "c:/wamp/www/dnsmasq/bin/upload.exp",
-        "tempDir" => "c:/wamp/www/dnsmasq/temp",
+        "scriptPath" => "c:/code/dnsmasq/bin/upload.exp",
+        "tempDir" => "c:/code/dnsmasq/temp",
         "uploadPath" => "/etc/dnsmasq.conf",
         "upstreamDns" => "8.8.8.8"
     );
