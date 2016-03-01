@@ -19,9 +19,9 @@ give you the degree of control or ease of use that you want, read on.
 While it may be possible to run this all on one host, it was designed to be run
 on two: one as the DNS server and the other as the web server.
 
-In addition to dnsmasq, the DNS server also needs to have an SSH server
+In addition to dnsmasq, the DNS server also needs iptables and an SSH server
 installed. If you're using [DD-WRT][7] or [OpenWrt][8], it should already have
-this. Otherwise, check your package manager.
+these. Otherwise, check your package manager.
 
 The web server needs support for PHP, an SSH client with SCP, and TCL with the
 Expect extension. These are normally installed through a package manager. On
@@ -66,16 +66,56 @@ $settings = array(
 );
 ```
 
-The dnsmasq config file needs to be available for this script to download as
+The dnsmasq config file needs to be available for the application to download as
 indicated by the `downloadUrl` setting. If you're using OpenWrt, you can create
-a symlink in the web root:
+a symlink to this file in the web root:
 
 ```sh
 # ln -s /etc/dnsmasq.conf /www/dnsmasq.conf
 ```
 
 If your DNS server does not also have a web server installed, `downloadUrl` can
-point to the location of a local copy of the config file instead.
+point to the location of a local copy of the config file instead - in theory.
+
+If there is no config file, the application will create an example that looks
+like this:
+
+```
+#[Options]
+bogus-priv
+domain-needed
+no-resolv
+
+#[Category: Forums]
+server=/stackauth.com/8.8.8.8
+server=/stackexchange.com/8.8.8.8
+server=/stackoverflow.com/8.8.8.8
+
+#[Category: Games]
+server=/steampowered.com/8.8.8.8
+server=/teamfortress.com/8.8.8.8 #This is a comment
+server=/valvesoftware.com/8.8.8.8
+
+#Games are awesome
+server=/gog.com/8.8.8.8
+
+#[Category: Search Engines]
+server=/bing.com/8.8.8.8
+server=/duckduckgo.com/8.8.8.8
+server=/google.com/8.8.8.8
+```
+
+Most important are the first three options: `bogus-priv`, `domain-needed` and
+`no-resolv`. If there was already a dnsmasq config file in place, make sure it
+contains these.
+
+Finally, add these firewall rules on the DNS server to prevent users from
+bypassing the whitelist:
+
+```
+iptables -t nat -I PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53
+iptables -t nat -I PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53
+```
 
 ###Step 3: Test
 
@@ -86,8 +126,8 @@ should look something like this:
 
 The interface is self-explanatory: you can add and delete categories using the
 "Add" and "Delete" buttons, change categories using the tabs on the left side,
-rename a category using the text input on the right side, add domain names to
-the textarea beneath the category name to allow them through the whitelist.
+rename a category using the text input on the right side, and add domain names
+to the textarea beneath the category name to allow them through the whitelist.
 
 When you're finished editing, use the "Upload" button to upload the
 configuration to the DNS server. You will be prompted for the password of the
