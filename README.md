@@ -1,0 +1,104 @@
+This application was designed to make it easy for non-technical users to manage
+a whitelist of domain names for [dnsmasq][1]. As such, it's probably the most
+complicated thing I've ever dreamed up, but it works surprisingly well after
+some setup.
+
+If you just want some parental controls or filtering on your network, consider
+one of the following:
+
+* [DansGuardian][2]
+* [K9 Web Protection][3]
+* [Net Nanny][4]
+* [OpenDNS][5]
+
+These days I use a hosts file and OpenDNS as a [blacklist][6]. If none of these
+give you the degree of control or ease of use that you want, read on.
+
+###Step 0: Prerequisites
+
+While it may be possible to run this all on one host, it was designed to be run
+on two: one as the DNS server and the other as the web server.
+
+In addition to dnsmasq, the DNS server also needs to have an SSH server
+installed. If you're using [DD-WRT][7] or [OpenWrt][8], it should already have
+this. Otherwise, check your package manager.
+
+The web server needs support for PHP, an SSH client with SCP, and TCL with the
+Expect extension. These are normally installed through a package manager. On
+Windows, use [Cygwin][9].
+
+###Step 1: Download
+
+Clone this repository to the web server:
+
+```sh
+$ git clone https://github.com/dave-kennedy/whitelist
+```
+
+###Step 2: Configure
+
+Edit the following lines in dnsmasq.php to match your environment:
+
+```php
+$settings = array(
+    // Locations of binaries on web server
+    "expectPath" => "/usr/bin/expect",
+    "scpPath" => "/usr/bin/scp",
+    "sshPath" => "/usr/bin/ssh",
+
+    // URL where we can download dnsmasq config file from DNS server
+    "downloadUrl" => "http://192.168.1.1/dnsmasq.conf",
+
+    // IP address of DNS server
+    "dnsServer" => "192.168.1.1",
+
+    // Location of DNS service file on DNS server
+    "dnsService" => "/etc/init.d/dnsmasq",
+
+    // Name of user with admin rights on DNS server
+    "sshUser" => "root",
+
+    // Location where we will upload dnsmasq config file to DNS server
+    "uploadPath" => "/etc/dnsmasq.conf",
+
+    // IP address to forward DNS requests that pass whitelist
+    "upstreamDns" => "8.8.8.8"
+);
+```
+
+The dnsmasq config file needs to be available for this script to download as
+indicated by the `downloadUrl` setting. If you're using OpenWrt, you can create
+a symlink in the web root:
+
+```sh
+# ln -s /etc/dnsmasq.conf /www/dnsmasq.conf
+```
+
+If your DNS server does not also have a web server installed, `downloadUrl` can
+point to the location of a local copy of the config file instead.
+
+###Step 3: Test
+
+Navigate to the URL where you cloned the repository in your web browser. It
+should look something like this:
+
+![Screenshot](screenshot.png)
+
+The interface is self-explanatory: you can add and delete categories using the
+"Add" and "Delete" buttons, change categories using the tabs on the left side,
+rename a category using the text input on the right side, add domain names to
+the textarea beneath the category name to allow them through the whitelist.
+
+When you're finished editing, use the "Upload" button to upload the
+configuration to the DNS server. You will be prompted for the password of the
+user specified by the `sshUser` setting above.
+
+[1]: http://www.thekelleys.org.uk/dnsmasq/doc.html
+[2]: http://www.dansguardian.org/
+[3]: http://www.k9webprotection.com/
+[4]: http://www.netnanny.com/
+[5]: http://www.opendns.com/
+[6]: https://github.com/dave-kennedy/blacklist
+[7]: http://www.dd-wrt.com/
+[8]: http://www.openwrt.org/
+[9]: http://www.cygwin.com/
