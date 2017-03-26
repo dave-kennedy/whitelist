@@ -14,7 +14,7 @@ one of the following:
 These days I use a hosts file and OpenDNS as a [blacklist][6]. If none of these
 give you the degree of control or ease of use that you want, read on.
 
-###Step 0: Prerequisites
+### Step 0: Prerequisites
 
 While it may be possible to run this all on one host, it was designed to be run
 on two: one as the DNS server and the other as the web server.
@@ -27,7 +27,7 @@ The web server needs support for PHP, an SSH client with SCP, and TCL with the
 Expect extension. These are normally installed through a package manager. On
 Windows, use [Cygwin][9].
 
-###Step 1: Download
+### Step 1: Download
 
 Clone this repository to the web server:
 
@@ -35,7 +35,7 @@ Clone this repository to the web server:
 $ git clone https://github.com/dave-kennedy/whitelist
 ```
 
-###Step 2: Configure
+### Step 2: Configure
 
 Edit the following lines in dnsmasq.php to match your environment:
 
@@ -117,7 +117,7 @@ iptables -t nat -I PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53
 iptables -t nat -I PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53
 ```
 
-###Step 3: Test
+### Step 3: Test
 
 Navigate to the URL where you cloned the repository in your web browser. It
 should look something like this:
