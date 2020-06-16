@@ -1,18 +1,10 @@
 This application was designed to make it easy for non-technical users to manage
-a whitelist of domain names for [dnsmasq][1]. As such, it's probably the most
-complicated thing I've ever dreamed up, but it works surprisingly well after
-some setup.
+a whitelist of domain names for [dnsmasq][1]. With the advent of DNS over
+HTTPS, it's now trivial for clients to bypass the DNS servers advertised by
+DHCP. This is great for user privacy, but many parents will have mixed feelings.
 
-If you just want some parental controls or filtering on your network, consider
-one of the following:
-
-* [DansGuardian][2]
-* [K9 Web Protection][3]
-* [Net Nanny][4]
-* [OpenDNS][5]
-
-These days I use a hosts file and OpenDNS as a [blacklist][6]. If none of these
-give you the degree of control or ease of use that you want, read on.
+If anyone knows of a good way to restrict DoH to a specific DNS server,
+[please get in touch][2].
 
 ### Step 0: Prerequisites
 
@@ -20,12 +12,12 @@ While it may be possible to run this all on one host, it was designed to be run
 on two: one as the DNS server and the other as the web server.
 
 In addition to dnsmasq, the DNS server also needs iptables and an SSH server
-installed. If you're using [DD-WRT][7] or [OpenWrt][8], it should already have
+installed. If you're using [DD-WRT][3] or [OpenWrt][4], it should already have
 these. Otherwise, check your package manager.
 
 The web server needs support for PHP, an SSH client with SCP, and TCL with the
 Expect extension. These are normally installed through a package manager. On
-Windows, use [Cygwin][9].
+Windows, use [Cygwin][5].
 
 ### Step 1: Download
 
@@ -134,11 +126,7 @@ configuration to the DNS server. You will be prompted for the password of the
 user specified by the `sshUser` setting above.
 
 [1]: http://www.thekelleys.org.uk/dnsmasq/doc.html
-[2]: http://www.dansguardian.org/
-[3]: http://www.k9webprotection.com/
-[4]: http://www.netnanny.com/
-[5]: http://www.opendns.com/
-[6]: https://github.com/dave-kennedy/blacklist
-[7]: http://www.dd-wrt.com/
-[8]: http://www.openwrt.org/
-[9]: http://www.cygwin.com/
+[2]: https://github.com/dave-kennedy/whitelist/issues
+[3]: http://www.dd-wrt.com/
+[4]: http://www.openwrt.org/
+[5]: http://www.cygwin.com/
